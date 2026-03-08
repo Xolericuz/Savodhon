@@ -118,37 +118,154 @@
     </div>
 
 <script>
-    const db = {
-        "A":{ step1:["A-na","A-ka","A-ta","A-pa","A-ra","A-ya"], step2:["A-n-or","A-lo-qa","A-ra-va","A-za-mat","A-ka-si","A-li-fbo"], step3:["A-ra-la-shuv","A-v-to-mo-bil","A-sos-la-moq","A-niq-la-ma","A-yov-siz-lik","A-x-bo-rot"] },
-        "B":{ step1:["Bo-la","Bo-bo","Bu-vi","Be-l","Bo-sh","Bo-g'"], step2:["Ba-li-q","Bi-li-m","Ba-ho-dir","Be-mo-r","Ba-ra-ka","Bo-la-chi"], step3:["Bo-sh-lan-g'ich","Bi-la-guz-ak","Ba-qa-te-rak","Bu-z-g'un-chi","Bo-yl-a-moq","Be-so'-na-qay"] },
-        "D":{ step1:["Da-da","Du-t","Do-n","Di-l","Da-m","Do-d"], step2:["Daf-ta-r","Da-v-lat","Da-ra-xt","Du-nyo-da","De-ho-n","Do-na-si"], step3:["Da-v-lat-shoh","Do-vyu-rak-lik","Da-ro-mad-lar","Da-s-tur-xon","Di-l-kash-lik","Da-s-t-go-h"] },
-        "E":{ step1:["E-lak","E-shak","E-shi","E-r","E-l","E-lu"], step2:["E-shi-k","E-ti-k","E-kin","E-ga-si","E-ti-bor","E-lo-n"], step3:["E-ti-bor-li","E-lak-do-zi","E-shi-tish-lik","E-rin-choq-lik","E-lo-n-no-ma","E-kin-zo-ri"] },
-        "F":{ step1:["Fa-n","Fo-n","Fe-n","Fa-x","Fa-r","Fa-l"], step2:["Fa-n-lar","Fo-nar","Fa-xr-li","Fa-o-li","Fe-o-dal","Fa-ra-z"], step3:["Fa-o-li-yat","Fa-xr-la-nish","Fe-o-dal-lik","Fa-o-li-yat-chi","Fa-n-te-xni-ka","Fa-rq-la-moq"] },
-        "G":{ step1:["Go-l","Ga-p","Gu-l","Go-r","Ga-r","Gu-r"], step2:["Gu-li-ston","Ga-ram","Go-ra","Gu-la-b","Ga-rib","Go-za-l"], step3:["Gu-li-ston-lik","Ga-pi-rish-moq","Go-za-lli-k","Gu-la-b-zo-r","Ga-rib-chil-ik","Go-ra-chi"] },
-        "H":{ step1:["Ha-l","Ho-l","Hu-n","Ha-m","Ho-r","Hu-r"], step2:["Ha-qi-q","Ho-zir","Hu-nar","Ha-ram","Ho-ji","Hu-jat"], step3:["Ha-qi-qiy-lik","Hu-nar-man-d","Ho-zir-gi-cha","Ha-ram-xo-na","Hu-jat-xo-na","Ho-zir-ja-vob"] },
-        "I":{ step1:["I-sh","I-zi","I-li","I-p","I-ch","I-z"], step2:["I-shon","I-lo-va","I-bo-ra","I-lo-m","I-liq","I-jo-d"], step3:["I-lo-va-lar","I-shon-ch-li","I-bo-ra-lar","I-jo-dkor-lik","I-lo-miy-lik","I-jo-di-yot"] },
-        "J":{ step1:["Jo-y","Ju-da","Ja-z","Jo-n","Ja-r","Ju-f"], step2:["Ja-vob","Jo-na","Ju-da-lik","Jo-yla","Ja-hon","Ju-ft"], step3:["Ja-hon-gir-lik","Jo-y-la-shuv","Ju-da-lash-moq","Ja-vob-gar-lik","Jo-na-chi","Ja-hon-bo-zor"] },
-        "K":{ step1:["Ko-l","Ki-t","Ka-m","Ko-r","Ki-r","Ka-r"], step2:["Ki-tob","Ko-ra","Ka-ra","Ko-mil","Ki-yim","Ka-lam"], step3:["Ki-tob-xo-na","Ko-mil-lik","Ka-lam-don","Ki-yim-ke-chak","Ko-ra-bo-zor","Ka-sb-kor"] },
-        "L":{ step1:["Lo-l","La-b","Li-p","Lo-y","La-q","Li-k"], step2:["La-bor","Lo-yih","Li-mon","Lo-la","La-ziz","Li-bos"], step3:["Lo-yih-a-chi","La-ziz-ta-om","Li-mon-zo-r","Lo-la-zo-r","Li-bos-do-n","La-bor-a-to-ri-ya"] },
-        "M":{ step1:["Mo-l","Ma-l","Mi-s","Mo-r","Ma-n","Mi-n"], step2:["Ma-shi-na","Mo-lar","Mi-sol","Ma-nba","Mo-hir","Mi-joz"], step3:["Ma-shi-na-soz","Mi-sol-lar","Mo-hir-lik","Ma-nba-si","Mi-joz-lar","Mo-d-diy-lik"] },
-        "N":{ step1:["No-n","Na-n","Ni-l","No-r","Na-z","Ni-k"], step2:["Na-vbat","No-ron","Ni-shon","Na-faqa","No-don","Ni-zom"], step3:["Ni-zom-no-ma","Na-faqa-xo'r","No-don-lik","Na-vbat-chi","Ni-shon-la-moq","No-ron-lik"] },
-        "O":{ step1:["O-ta","O-na","O-l","O-q","O-y","O-r"], step2:["O-lma","O-na-si","O-rik","O-chiq","O-qil","O-yin"], step3:["O-na-tili","O-yin-choq","O-lma-zor","O-chiq-cha","O-qil-ona","O-rik-zor"] },
-        "P":{ step1:["Pa-l","Po-l","Pu-l","Pa-r","Po-r","Pu-x"], step2:["Paxta","Po-chta","Pu-lik","Pa-lov","Po-li","Pu-lar"], step3:["Paxta-kor","Po-chta-xo-na","Pu-lik-lik","Pa-lov-xo'r","Po-li-si-ya","Pu-lar-chi"] },
-        "Q":{ step1:["Qo-l","Qa-l","Qu-y","Qo-n","Qa-r","Qu-l"], step2:["Qa-lam","Qo-zon","Qu-yosh","Qa-ror","Qo-lip","Qu-lup"], step3:["Qo-zon-cha","Qa-lam-kash","Qu-yosh-li","Qa-ror-goh","Qo-lip-la-moq","Qu-lup-la-moq"] },
-        "R":{ step1:["Ra-m","Ro-l","Ri-s","Ra-z","Ro-q","Ri-z"], step2:["Ro-bot","Ra-qam","Ri-so-la","Ro-mol","Ra-sm","Ri-sha"], step3:["Ra-qam-li","Ro-mol-cha","Ri-so-la-chi","Ra-sm-chi","Ro-bot-tex","Ri-sha-do-n"] },
-        "S":{ step1:["Sa-l","So-l","Su-v","Sa-r","So-n","Su-l"], step2:["Sa-vat","So-at","Su-vor","Sa-lom","So-voq","Su-li"], step3:["Sa-lom-lash-moq","So-at-soz","Su-vor-lik","Sa-vat-cha","So-voq-li","Su-li-lik"] },
-        "T":{ step1:["Ta-n","To-n","Tu-r","Ta-r","To-q","Tu-z"], step2:["Ta-lim","To-mir","Tu-zuk","Ta-rif","To-sha","Tu-rar"], step3:["Ta-lim-chi","To-mir-lar","Tu-zuk-lik","Ta-rif-no-ma","To-sha-chi","Tu-rar-joy"] },
-        "U":{ step1:["U-y","U-q","U-r","U-z","U-l","U-b"], step2:["U-zum","U-chiq","U-rug","U-loq","U-lan","U-yat"], step3:["U-zum-zo-r","U-rug-chi","U-lan-ma","U-loq-chi","U-yat-li","U-chiq-cha"] },
-        "V":{ step1:["Va-l","Vo-l","Vi-r","Va-r","Vo-z","Vi-l"], step2:["Va-li","Vo-li","Vi-deo","Va-diy","Vo-zin","Vi-la"], step3:["Vi-deo-lar","Va-diy-lik","Vo-zin-li","Vi-la-chi","Va-li-yat","Vo-li-yat"] },
-        "X":{ step1:["Xa-l","Xo-l","Xu-r","Xa-r","Xo-z","Xu-l"], step2:["Xa-lq","Xo-na","Xu-rmo","Xa-rid","Xo-zir","Xu-loq"], step3:["Xa-rid-or","Xo-na-do-n","Xu-rmo-zor","Xa-lq-la-r","Xo-zir-cha","Xu-loq-cha"] },
-        "Y":{ step1:["Ya-r","Yo-l","Yu-z","Ya-z","Yo-n","Yu-k"], step2:["Yo-zuv","Yu-zum","Ya-rim","Yo-nal","Yu-kla","Ya-xshi"], step3:["Yo-zuv-chi","Yu-kla-moq","Ya-xshi-lik","Yo-nal-ish","Yu-zum-zor","Ya-rim-cha"] },
-        "Z":{ step1:["Za-r","Zo-r","Zu-r","Za-k","Zo-n","Zu-l"], step2:["Za-rar","Zo-ri","Zu-lm","Za-mon","Zo-na","Zu-luk"], step3:["Za-mon-lar","Zo-na-do-n","Zu-lm-kor","Za-rar-li","Zo-riq-moq","Zu-luk-lik"] },
-        "O'":{ step1:["O'-q","O'-n","O'-r","O'-t","O'-l","O'-z"], step2:["O'-rik","O'-g'il","O'-choq","O'-rni","O'-lim","O'-zak"], step3:["O'-rik-zor","O'-g'il-cha","O'-lim-lar","O'-zak-li","O'-choq-chi","O'-rni-da"] },
-        "G'":{ step1:["G'-o'r","G'-am","G'-o'z","G'-ar","G'-un","G'-ur"], step2:["G'-ozal","G'-alla","G'-ozor","G'-urur","G'-amxo'r","G'-o'zap"], step3:["G'-ozal-lik","G'-alla-kor","G'-urur-li","G'-amxo'r-lik","G'-ozor-lik","G'-o'zap-chi"] },
-        "Sh":{ step1:["Sha-m","Sho-r","Shu-r","Sha-r","Sho-l","Shu-k"], step2:["Sha-mal","Sho-ra","Shu-kuh","Sha-raf","Sho-la","Shu-kr"], step3:["Sha-raf-li","Sho-la-chi","Shu-kuh-li","Sha-mal-lar","Sho-ra-lik","Shu-kr-chi"] },
-        "Ch":{ step1:["Cha-y","Cho-y","Chu-q","Cha-r","Cho-l","Chu-l"], step2:["Cha-yla","Cho-pon","Chu-qur","Cha-ra","Cho-lar","Chu-luk"], step3:["Cha-yla-chi","Cho-pon-lik","Chu-qur-lik","Cha-ra-la-moq","Cho-lar-chi","Chu-luk-lik"] },
-        "Ng":{ step1:["Ng-a","Ng-u","Ng-o","Ng-e","Ng-i","Ng-a"], step2:["Ng-o-li","Ng-a-na","Ng-u-lar","Ng-o-ra","Ng-a-li","Ng-i-za"], step3:["Ng-o-li-chi","Ng-a-na-lik","Ng-u-lar-chi","Ng-o-ra-lik","Ng-a-li-lar","Ng-i-za-li"] }
+        const db = {
+        "A":{
+            step1:["A-ka", "A-pa", "A-ra", "A-na", "A-to", "A-yiq"],
+            step2:["A-nor", "A-lo-qa", "A-ra-va", "A-za-mat", "A-lif-bo", "A-dras"],
+            step3:["Av-to-mo-bil", "A-ra-la-shuv", "A-sos-la-moq", "A-niq-la-ma", "Ax-bo-rot", "A-yov-siz"]
+        },
+        "B":{
+            step1:["Bo-la", "Bo-bo", "Bu-vi", "Bo-g'i", "Be-da", "Ba-ho"],
+            step2:["Ba-liq", "Bi-lim", "Ba-ho-dir", "Be-mor", "Ba-ra-ka", "Bay-ram"],
+            step3:["Bosh-lan-g'ich", "Bi-la-gu-zuk", "Ba-qa-te-rak", "Bu-z-g'un-chi", "Boy-la-moq", "Be-g'u-bor"]
+        },
+        "D":{
+            step1:["Da-da", "Da-la", "Do-ri", "Da-vo", "Du-tor", "Do-hiy"],
+            step2:["Daf-tar", "Dav-lat", "Da-raxt", "Dun-yo", "Deh-qon", "Do-i-ra"],
+            step3:["Dav-lat-shoh", "Do-vyu-rak", "Da-ro-mad-lar", "Das-tur-xon", "Dil-kash-lik", "Dast-goh"]
+        },
+        "E":{
+            step1:["E-shik", "E-lak", "E-lat", "E-kin", "Er-tak", "E-nuz"],
+            step2:["E-tik", "E-ga-si", "E-ti-bor", "E-lon", "El-lik", "Er-ta-lab"],
+            step3:["E-ti-bor-li", "E-lak-chi", "E-shi-tish", "E-rin-choq", "E-lon-no-ma", "E-kin-zor"]
+        },
+        "F":{
+            step1:["Fa-zo", "Fi-do", "Fa-qir", "Fo-iz", "Fa-ol", "Fer-ma"],
+            step2:["Fan-lar", "Fo-nar", "Fax-riy", "Fik-rim", "Fer-mer", "Fa-raz"],
+            step3:["Fa-o-li-yat", "Faxr-la-nish", "Fi-do-kor-lik", "Fan-tex-ni-ka", "Farq-la-moq", "Fikr-lash-moq"]
+        },
+        "G":{
+            step1:["Gu-li", "Gav-da", "Gi-lam", "Gu-ruh", "Ga-do", "Gu-ruch"],
+            step2:["Gu-lis-ton", "Ga-ram", "Gul-don", "Gul-xan", "Gul-chi", "Gar-mon"],
+            step3:["Gu-lis-ton-lik", "Ga-pi-rish-moq", "Gul-par-var", "Gul-xan-chi", "Gi-lam-doz", "Gar-dish-li"]
+        },
+        "H":{
+            step1:["Ha-vo", "Ha-yo", "Hi-dla", "Hi-sob", "Ha-sad", "Hur-mat"],
+            step2:["Ha-qi-qat", "Ho-zir", "Hu-nar", "Ha-ram", "Ho-ji", "Huj-jat"],
+            step3:["Ha-qi-qiy", "Hu-nar-mand", "Ho-zir-gi", "Ha-ram-xo-na", "Huj-jat-xo-na", "Ho-zir-ja-vob"]
+        },
+        "I":{
+            step1:["I-lon", "I-pak", "I-rim", "It-lar", "Ik-ki", "I-liq"],
+            step2:["I-shonch", "I-lo-va", "I-bo-ra", "Ilm-li", "I-job", "I-jod"],
+            step3:["I-lo-va-lar", "I-shonch-li", "I-bo-ra-lar", "I-jod-kor", "Il-miy-lik", "I-jo-di-yot"]
+        },
+        "J":{
+            step1:["Ju-da", "Jo'-ja", "Jar-lik", "Ja-zo", "Jiy-da", "Ja-sur"],
+            step2:["Ja-vob", "Jo'-nat", "Jah-li", "Joy-la", "Ja-hon", "Juft-lik"],
+            step3:["Ja-hon-gir", "Joy-la-shuv", "Ja-za-va-li", "Ja-vob-gar", "Jahl-dor", "Ja-sur-lik"]
+        },
+        "K":{
+            step1:["Ka-bi", "Ku-ni", "Ke-cha", "Ko'-rpa", "Ku-rak", "Ki-shi"],
+            step2:["Ki-tob", "Ko-i-not", "Kar-rak", "Ko-mil", "Ki-yim", "Ka-lom"],
+            step3:["Ki-tob-xon", "Ko-mil-lik", "Ka-lam-don", "Ki-yim-ke-chak", "Ke-la-jak-da", "Kasb-kor"]
+        },
+        "L":{
+            step1:["Lo-la", "Lo-chin", "La-gan", "Lay-li", "Lu-g'at", "La-qab"],
+            step2:["La-bo-rant", "Lo-yi-ha", "Li-mon", "La-ziz", "Li-bos", "La-pir"],
+            step3:["Lo-yi-ha-chi", "La-bo-ra-to-ri-ya", "Li-mon-zor", "Lo-la-zor", "Li-bos-lar", "La-ta-lat"]
+        },
+        "M":{
+            step1:["Mo-mo", "Mak-tab", "Ma-qol", "Ma-no", "Me-va", "Mu-shuk"],
+            step2:["Ma-shi-na", "Mi-sol", "Man-ba", "Mo-hir", "Mi-joz", "Mas-jid"],
+            step3:["Ma-shi-na-soz", "Mi-sol-lar", "Mo-hir-lik", "Man-ba-si", "Mi-joz-lar", "Mod-diy-lik"]
+        },
+        "N":{
+            step1:["No-mi", "Na-fas", "Ni-yat", "Ne-mat", "No-ta", "Na-vo"],
+            step2:["Nav-bat", "No-rin", "Ni-shon", "Na-fa-qa", "No-don", "Ni-zom"],
+            step3:["Ni-zom-no-ma", "Na-fa-qa-xo'r", "No-don-lik", "Nav-bat-chi", "Ni-shon-la-moq", "No-rin-lik"]
+        },
+        "O":{
+            step1:["O-ta", "O-na", "O-yoq", "O-voz", "O-lov", "O-xir"],
+            step2:["Ol-ma", "O-na-si", "O-chiq", "O-qil", "O-dam", "O-qim"],
+            step3:["O-na-ti-li", "O-chiq-lik", "O-lim-lar", "O-qil-o-na", "O-vo-za", "O-dam-zod"]
+        },
+        "P":{
+            step1:["Pax-ta", "Pi-yoz", "Pe-shin", "Pa-dar", "Pak-ka", "Pu-fak"],
+            step2:["Poch-ta", "Pul-lik", "Pa-lov", "Po-liz", "Par-da", "Pi-shiq"],
+            step3:["Pax-ta-kor", "Poch-ta-xo-na", "Par-hez-kor", "Po-liz-chi", "Par-doz-chi", "Pa-lov-xo'r"]
+        },
+        "Q":{
+            step1:["Qa-mish", "Qa-tiq", "Qo-zi", "Qu-yon", "Qa-ri", "Qat-tiq"],
+            step2:["Qa-lam", "Qo-zon", "Qu-yosh", "Qa-ror", "Qo-lip", "Qul-fi"],
+            step3:["Qo-zon-cha", "Qa-lam-kash", "Qu-yosh-li", "Qa-ror-goh", "Qo-lip-la-moq", "Qulf-la-moq"]
+        },
+        "R":{
+            step1:["Ruch-ka", "Ra-fiq", "Ro-zi", "Ra-is", "Ri-voj", "Rost-go'y"],
+            step2:["Ro-bot", "Ra-qam", "Ri-so-la", "Ras-som", "Rish-ta", "Ray-hon"],
+            step3:["Ra-qam-li", "Ro-hat-lan-moq", "Ri-so-la-chi", "Ras-som-chi", "Ro-bot-tex", "Rish-ta-lar"]
+        },
+        "S":{
+            step1:["Sa-vat", "Sa-riq", "So-vuq", "Sa-har", "Sa-noq", "So-ya"],
+            step2:["So-at", "Su-vor", "Sa-lom", "Sa-voq", "Su-li", "Sar-son"],
+            step3:["Sa-lom-lash-moq", "So-at-soz", "Su-vo-riy", "Sa-vat-cha", "Sa-voq-li", "Sez-gir-lik"]
+        },
+        "T":{
+            step1:["To-voq", "Tu-ya", "Til-la", "To-la", "To-g'a", "Tul-ki"],
+            step2:["Ta-lim", "To-mir", "Tu-zuk", "Ta-rif", "Ti-kin", "Tu-rar"],
+            step3:["Ta-lim-ot", "To-mir-lar", "Tu-zuk-lik", "Ta-rif-no-ma", "To-mo-sha", "Tu-rar-joy"]
+        },
+        "U":{
+            step1:["U-kam", "U-zun", "U-ka", "U-mid", "U-zum", "U-ya"],
+            step2:["U-shoq", "U-rug'", "U-loq", "U-lan", "U-yat", "U-quv"],
+            step3:["U-zum-zor", "U-rug'-chi", "U-lan-ma", "U-loq-chi", "U-yat-li", "U-mid-vor"]
+        },
+        "V":{
+            step1:["Va-fo", "Va-tan", "Va-raq", "Vij-don", "Va-kil", "Vo-ya"],
+            step2:["Vi-deo", "Vo-diy", "Vaz-ni", "Vil-ka", "Var-rak", "Va-li"],
+            step3:["Vi-deo-lar", "Vo-diy-lik", "Vazn-siz-lik", "Vil-ka-lar", "Va-si-yat", "Vi-lo-yat"]
+        },
+        "X":{
+            step1:["Xa-to", "Xat-lar", "Xu-mi", "Xo-la", "Xa-rit", "Xa-fa"],
+            step2:["Xal-qim", "Xo-na", "Xur-mo", "Xa-rid", "Xa-bar", "Xir-mon"],
+            step3:["Xa-ri-dor", "Xo-na-don", "Xur-mo-zor", "Xal-qa-ro", "Xa-bar-dor", "Xir-mon-jo"]
+        },
+        "Y":{
+            step1:["Ya-ngi", "Yu-rak", "Yil-gi", "Yo-vuz", "Ya-rim", "Yo-qut"],
+            step2:["Yo-zuv", "Yul-g'un", "Yo'-nal", "Yuk-la", "Yax-shi", "Ya-qin"],
+            step3:["Yo-zuv-chi", "Yuk-la-moq", "Yax-shi-lik", "Ya-ngi-lik", "Yurt-dosh-lar", "Ya-rim-ta"]
+        },
+        "Z":{
+            step1:["Za-ki", "Zar-ba", "Zi-rak", "Zo-g'or", "Zi-na", "Za-far"],
+            step2:["Za-rar", "Za-min", "Za-mon", "Zo-na", "Zu-luk", "Zan-jir"],
+            step3:["Za-mon-lar", "Za-min-dor", "Zulm-kor", "Za-rar-li", "Zo-riq-moq", "Zu-luk-lar"]
+        },
+        "O'":{
+            step1:["O'-rik", "O'-zi", "O'-rtoq", "O'-rdak", "O'-tish", "O'-yin"],
+            step2:["O'-g'il", "O'-choq", "O'-rni", "O'-lim", "O'-zak", "O'-sim"],
+            step3:["O'-rik-zor", "O'-g'il-cha", "O'-lim-lar", "O'-zak-li", "O'-choq-chi", "O'-rtog'-im"]
+        },
+        "G'":{
+            step1:["G'-o'za", "G'i-lof", "G'o-lib", "G'o-ya", "G'i-rom", "G'a-zab"],
+            step2:["G'o-zal", "G'al-la", "G'o-yib", "G'u-rur", "G'am-xo'r", "G'il-dir"],
+            step3:["G'o-zal-lik", "G'al-la-kor", "G'u-rur-li", "G'am-xo'r-lik", "G'il-di-rak", "G'a-zab-li"]
+        },
+        "Sh":{
+            step1:["Sha-har", "Shod-li", "Shu-mi", "Shi-rin", "Sha-mo", "Shi-pa"],
+            step2:["Sha-mol", "Shod-lik", "Shu-kuh", "Sha-raf", "Shu-ur", "Shu-kr"],
+            step3:["Sha-raf-li", "Sha-har-lar", "Shu-kuh-li", "Sha-mol-lar", "Shod-lik-lar", "Shu-kr-li"]
+        },
+        "Ch":{
+            step1:["Cha-qa", "Choy-nak", "Chu-qur", "Che-lak", "Chi-roq", "Chuch-va"],
+            step2:["Chay-la", "Cho-pon", "Chu-qur", "Cha-na", "Chi-roq", "Cha-qir"],
+            step3:["Chay-la-chi", "Cho-pon-lar", "Chu-qur-lik", "Cha-qir-moq", "Choy-nak-lar", "Chi-roq-chi"]
+        },
+        "Ng":{
+            step1:["Ta-nga", "De-ngiz", "Sha-ng'i", "Ma-ngu", "Bo-ngi", "So-ngi"],
+            step2:["Ta-nga-lar", "Jang-chi", "Si-ngil", "To-ngi", "Ro-ngi", "Mi-ngi"],
+            step3:["De-ngiz-chi", "Jang-chi-lar", "Man-gu-lik", "Tong-gi-lar", "Sin-gil-lar", "Chan-gal-zor"]
+        }
     };
+
 
     const alphabet = ["A", "B", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "X", "Y", "Z", "O'", "G'", "Sh", "Ch", "Ng"];
 
