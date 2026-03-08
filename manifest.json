@@ -1,0 +1,21 @@
+{
+  "name": "XOLƎRIƆ",
+  "short_name": "XOLƎRIƆ",
+  "description": "1-5 sinflar uchun fokuslangan savodxonlik ilovasi",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/31z50p3/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.ibb.co/31z50p3/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
