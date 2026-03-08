@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#131314">
+    <title>XOLƎRIƆ - Savodxonlik</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #131314;
+            --surface: #1e1f20;
+            --surface-hover: #282a2c;
+            --text-main: #e3e3e3;
+            --text-muted: #8e8e8e;
+            --border: #333538;
+            --accent: #ffffff;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; user-select: none; }
+        body { background-color: var(--bg); color: var(--text-main); -webkit-tap-highlight-color: transparent; overflow: hidden; }
+        
+        /* ANIMATIONS */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards; }
+        .fade-out { animation: fadeOut 0.3s cubic-bezier(0.2, 0, 0, 1) forwards; }
+
+        /* WELCOME SCREEN */
+        #welcome-view { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; background: var(--bg); padding: 20px; }
+        .logo-large { font-size: 2.5rem; font-weight: 700; letter-spacing: 3px; margin-bottom: 40px; display: flex; align-items: center; gap: 15px; color: var(--accent); }
+        .logo-large img { width: 60px; height: 60px; border-radius: 12px; }
+        .input-group { width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 15px; }
+        .name-input { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text-main); padding: 18px 20px; border-radius: 16px; font-size: 1.2rem; outline: none; text-align: center; transition: 0.3s; }
+        .name-input:focus { border-color: var(--text-muted); }
+        .btn-enter { background: var(--text-main); color: var(--bg); padding: 18px; border-radius: 16px; font-size: 1.2rem; font-weight: 600; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-enter:active { transform: scale(0.97); opacity: 0.9; }
+
+        /* MAIN APP SHELL */
+        #app-shell { display: none; width: 100vw; height: 100vh; flex-direction: column; }
+        
+        /* HEADER */
+        header { display: flex; align-items: center; justify-content: space-between; padding: 20px 25px; border-bottom: 1px solid var(--border); background: var(--bg); }
+        .header-left { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; letter-spacing: 1px; }
+        .header-left img { width: 30px; height: 30px; border-radius: 6px; }
+        .user-greeting { color: var(--text-muted); font-size: 1rem; }
+
+        /* ALPHABET GRID */
+        #main-view { flex: 1; padding: 30px 25px; overflow-y: auto; max-width: 800px; margin: 0 auto; width: 100%; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 15px; margin-top: 20px; }
+        .letter-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 500; cursor: pointer; transition: 0.2s; color: var(--text-main); }
+        .letter-btn:active { transform: scale(0.92); background: var(--surface-hover); }
+        .letter-btn.completed { background: var(--bg); color: var(--text-muted); border-color: transparent; }
+
+        /* FOCUS MODE */
+        #focus-view { display: none; flex: 1; flex-direction: column; background: var(--bg); position: relative; }
+        .focus-top { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 10px 0; }
+        .step-badge { background: var(--surface); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; color: var(--text-muted); border: 1px solid var(--border); }
+
+        .focus-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        .focus-letter-display { font-size: 2rem; color: var(--text-muted); margin-bottom: 30px; font-weight: 500; }
+        
+        .word-display { font-size: 4rem; font-weight: 700; letter-spacing: 2px; line-height: 1.2; width: 100%; }
+        .syl-1 { color: #ffffff; }
+        .syl-2 { color: #a0a0a0; }
+        .syl-3 { color: #555555; }
+
+        .focus-bottom { padding: 30px 25px; display: flex; justify-content: center; }
+        .btn-next { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 20px; border-radius: 20px; font-size: 1.3rem; font-weight: 600; width: 100%; max-width: 400px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; gap: 10px; }
+        .btn-next:active { background: var(--surface-hover); transform: scale(0.98); }
+        .btn-primary-action { background: var(--text-main); color: var(--bg); border: none; }
+        .btn-primary-action:active { background: #cccccc; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-view">
+        <div class="logo-large fade-in">
+            <img src="https://i.ibb.co/31z50p3/logo.png" alt="Logo">
+            XOLƎRIƆ
+        </div>
+        <div class="input-group fade-in" style="animation-delay: 0.1s;">
+            <input type="text" id="user-name" class="name-input" placeholder="Ismingizni kiriting" autocomplete="off">
+            <button class="btn-enter" onclick="startApp()">Kirish</button>
+        </div>
+    </div>
+
+    <div id="app-shell">
+        <header>
+            <div class="header-left">
+                <img src="https://i.ibb.co/31z50p3/logo.png" alt="Logo">
+                XOLƎRIƆ
+            </div>
+            <div class="user-greeting" id="greeting-text"></div>
+        </header>
+
+        <main id="main-view">
+            <h2 style="font-weight: 500; color: var(--text-muted); margin-bottom: 10px;">Qaysi harfni o'rganamiz?</h2>
+            <div class="grid" id="alphabet-grid"></div>
+        </main>
+
+        <div id="focus-view">
+            <div class="focus-top">
+                <button class="back-btn" onclick="exitFocus()">← Orqaga</button>
+                <div class="step-badge" id="step-indicator">1-qadam</div>
+                <div style="width: 60px;"></div> </div>
+            
+            <div class="focus-center" id="word-container">
+                <div class="focus-letter-display" id="focus-letter-title">Aa</div>
+                <div class="word-display" id="current-word"></div>
+            </div>
+
+            <div class="focus-bottom">
+                <button class="btn-next btn-primary-action" id="next-btn" onclick="nextAction()">Keyingisi →</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const db = {
+        "A":{ step1:["A-na","A-ka","A-ta","A-pa","A-ra","A-ya"], step2:["A-n-or","A-lo-qa","A-ra-va","A-za-mat","A-ka-si","A-li-fbo"], step3:["A-ra-la-shuv","A-v-to-mo-bil","A-sos-la-moq","A-niq-la-ma","A-yov-siz-lik","A-x-bo-rot"] },
+        "B":{ step1:["Bo-la","Bo-bo","Bu-vi","Be-l","Bo-sh","Bo-g'"], step2:["Ba-li-q","Bi-li-m","Ba-ho-dir","Be-mo-r","Ba-ra-ka","Bo-la-chi"], step3:["Bo-sh-lan-g'ich","Bi-la-guz-ak","Ba-qa-te-rak","Bu-z-g'un-chi","Bo-yl-a-moq","Be-so'-na-qay"] },
+        "D":{ step1:["Da-da","Du-t","Do-n","Di-l","Da-m","Do-d"], step2:["Daf-ta-r","Da-v-lat","Da-ra-xt","Du-nyo-da","De-ho-n","Do-na-si"], step3:["Da-v-lat-shoh","Do-vyu-rak-lik","Da-ro-mad-lar","Da-s-tur-xon","Di-l-kash-lik","Da-s-t-go-h"] },
+        "E":{ step1:["E-lak","E-shak","E-shi","E-r","E-l","E-lu"], step2:["E-shi-k","E-ti-k","E-kin","E-ga-si","E-ti-bor","E-lo-n"], step3:["E-ti-bor-li","E-lak-do-zi","E-shi-tish-lik","E-rin-choq-lik","E-lo-n-no-ma","E-kin-zo-ri"] },
+        "F":{ step1:["Fa-n","Fo-n","Fe-n","Fa-x","Fa-r","Fa-l"], step2:["Fa-n-lar","Fo-nar","Fa-xr-li","Fa-o-li","Fe-o-dal","Fa-ra-z"], step3:["Fa-o-li-yat","Fa-xr-la-nish","Fe-o-dal-lik","Fa-o-li-yat-chi","Fa-n-te-xni-ka","Fa-rq-la-moq"] },
+        "G":{ step1:["Go-l","Ga-p","Gu-l","Go-r","Ga-r","Gu-r"], step2:["Gu-li-ston","Ga-ram","Go-ra","Gu-la-b","Ga-rib","Go-za-l"], step3:["Gu-li-ston-lik","Ga-pi-rish-moq","Go-za-lli-k","Gu-la-b-zo-r","Ga-rib-chil-ik","Go-ra-chi"] },
+        "H":{ step1:["Ha-l","Ho-l","Hu-n","Ha-m","Ho-r","Hu-r"], step2:["Ha-qi-q","Ho-zir","Hu-nar","Ha-ram","Ho-ji","Hu-jat"], step3:["Ha-qi-qiy-lik","Hu-nar-man-d","Ho-zir-gi-cha","Ha-ram-xo-na","Hu-jat-xo-na","Ho-zir-ja-vob"] },
+        "I":{ step1:["I-sh","I-zi","I-li","I-p","I-ch","I-z"], step2:["I-shon","I-lo-va","I-bo-ra","I-lo-m","I-liq","I-jo-d"], step3:["I-lo-va-lar","I-shon-ch-li","I-bo-ra-lar","I-jo-dkor-lik","I-lo-miy-lik","I-jo-di-yot"] },
+        "J":{ step1:["Jo-y","Ju-da","Ja-z","Jo-n","Ja-r","Ju-f"], step2:["Ja-vob","Jo-na","Ju-da-lik","Jo-yla","Ja-hon","Ju-ft"], step3:["Ja-hon-gir-lik","Jo-y-la-shuv","Ju-da-lash-moq","Ja-vob-gar-lik","Jo-na-chi","Ja-hon-bo-zor"] },
+        "K":{ step1:["Ko-l","Ki-t","Ka-m","Ko-r","Ki-r","Ka-r"], step2:["Ki-tob","Ko-ra","Ka-ra","Ko-mil","Ki-yim","Ka-lam"], step3:["Ki-tob-xo-na","Ko-mil-lik","Ka-lam-don","Ki-yim-ke-chak","Ko-ra-bo-zor","Ka-sb-kor"] },
+        "L":{ step1:["Lo-l","La-b","Li-p","Lo-y","La-q","Li-k"], step2:["La-bor","Lo-yih","Li-mon","Lo-la","La-ziz","Li-bos"], step3:["Lo-yih-a-chi","La-ziz-ta-om","Li-mon-zo-r","Lo-la-zo-r","Li-bos-do-n","La-bor-a-to-ri-ya"] },
+        "M":{ step1:["Mo-l","Ma-l","Mi-s","Mo-r","Ma-n","Mi-n"], step2:["Ma-shi-na","Mo-lar","Mi-sol","Ma-nba","Mo-hir","Mi-joz"], step3:["Ma-shi-na-soz","Mi-sol-lar","Mo-hir-lik","Ma-nba-si","Mi-joz-lar","Mo-d-diy-lik"] },
+        "N":{ step1:["No-n","Na-n","Ni-l","No-r","Na-z","Ni-k"], step2:["Na-vbat","No-ron","Ni-shon","Na-faqa","No-don","Ni-zom"], step3:["Ni-zom-no-ma","Na-faqa-xo'r","No-don-lik","Na-vbat-chi","Ni-shon-la-moq","No-ron-lik"] },
+        "O":{ step1:["O-ta","O-na","O-l","O-q","O-y","O-r"], step2:["O-lma","O-na-si","O-rik","O-chiq","O-qil","O-yin"], step3:["O-na-tili","O-yin-choq","O-lma-zor","O-chiq-cha","O-qil-ona","O-rik-zor"] },
+        "P":{ step1:["Pa-l","Po-l","Pu-l","Pa-r","Po-r","Pu-x"], step2:["Paxta","Po-chta","Pu-lik","Pa-lov","Po-li","Pu-lar"], step3:["Paxta-kor","Po-chta-xo-na","Pu-lik-lik","Pa-lov-xo'r","Po-li-si-ya","Pu-lar-chi"] },
+        "Q":{ step1:["Qo-l","Qa-l","Qu-y","Qo-n","Qa-r","Qu-l"], step2:["Qa-lam","Qo-zon","Qu-yosh","Qa-ror","Qo-lip","Qu-lup"], step3:["Qo-zon-cha","Qa-lam-kash","Qu-yosh-li","Qa-ror-goh","Qo-lip-la-moq","Qu-lup-la-moq"] },
+        "R":{ step1:["Ra-m","Ro-l","Ri-s","Ra-z","Ro-q","Ri-z"], step2:["Ro-bot","Ra-qam","Ri-so-la","Ro-mol","Ra-sm","Ri-sha"], step3:["Ra-qam-li","Ro-mol-cha","Ri-so-la-chi","Ra-sm-chi","Ro-bot-tex","Ri-sha-do-n"] },
+        "S":{ step1:["Sa-l","So-l","Su-v","Sa-r","So-n","Su-l"], step2:["Sa-vat","So-at","Su-vor","Sa-lom","So-voq","Su-li"], step3:["Sa-lom-lash-moq","So-at-soz","Su-vor-lik","Sa-vat-cha","So-voq-li","Su-li-lik"] },
+        "T":{ step1:["Ta-n","To-n","Tu-r","Ta-r","To-q","Tu-z"], step2:["Ta-lim","To-mir","Tu-zuk","Ta-rif","To-sha","Tu-rar"], step3:["Ta-lim-chi","To-mir-lar","Tu-zuk-lik","Ta-rif-no-ma","To-sha-chi","Tu-rar-joy"] },
+        "U":{ step1:["U-y","U-q","U-r","U-z","U-l","U-b"], step2:["U-zum","U-chiq","U-rug","U-loq","U-lan","U-yat"], step3:["U-zum-zo-r","U-rug-chi","U-lan-ma","U-loq-chi","U-yat-li","U-chiq-cha"] },
+        "V":{ step1:["Va-l","Vo-l","Vi-r","Va-r","Vo-z","Vi-l"], step2:["Va-li","Vo-li","Vi-deo","Va-diy","Vo-zin","Vi-la"], step3:["Vi-deo-lar","Va-diy-lik","Vo-zin-li","Vi-la-chi","Va-li-yat","Vo-li-yat"] },
+        "X":{ step1:["Xa-l","Xo-l","Xu-r","Xa-r","Xo-z","Xu-l"], step2:["Xa-lq","Xo-na","Xu-rmo","Xa-rid","Xo-zir","Xu-loq"], step3:["Xa-rid-or","Xo-na-do-n","Xu-rmo-zor","Xa-lq-la-r","Xo-zir-cha","Xu-loq-cha"] },
+        "Y":{ step1:["Ya-r","Yo-l","Yu-z","Ya-z","Yo-n","Yu-k"], step2:["Yo-zuv","Yu-zum","Ya-rim","Yo-nal","Yu-kla","Ya-xshi"], step3:["Yo-zuv-chi","Yu-kla-moq","Ya-xshi-lik","Yo-nal-ish","Yu-zum-zor","Ya-rim-cha"] },
+        "Z":{ step1:["Za-r","Zo-r","Zu-r","Za-k","Zo-n","Zu-l"], step2:["Za-rar","Zo-ri","Zu-lm","Za-mon","Zo-na","Zu-luk"], step3:["Za-mon-lar","Zo-na-do-n","Zu-lm-kor","Za-rar-li","Zo-riq-moq","Zu-luk-lik"] },
+        "O'":{ step1:["O'-q","O'-n","O'-r","O'-t","O'-l","O'-z"], step2:["O'-rik","O'-g'il","O'-choq","O'-rni","O'-lim","O'-zak"], step3:["O'-rik-zor","O'-g'il-cha","O'-lim-lar","O'-zak-li","O'-choq-chi","O'-rni-da"] },
+        "G'":{ step1:["G'-o'r","G'-am","G'-o'z","G'-ar","G'-un","G'-ur"], step2:["G'-ozal","G'-alla","G'-ozor","G'-urur","G'-amxo'r","G'-o'zap"], step3:["G'-ozal-lik","G'-alla-kor","G'-urur-li","G'-amxo'r-lik","G'-ozor-lik","G'-o'zap-chi"] },
+        "Sh":{ step1:["Sha-m","Sho-r","Shu-r","Sha-r","Sho-l","Shu-k"], step2:["Sha-mal","Sho-ra","Shu-kuh","Sha-raf","Sho-la","Shu-kr"], step3:["Sha-raf-li","Sho-la-chi","Shu-kuh-li","Sha-mal-lar","Sho-ra-lik","Shu-kr-chi"] },
+        "Ch":{ step1:["Cha-y","Cho-y","Chu-q","Cha-r","Cho-l","Chu-l"], step2:["Cha-yla","Cho-pon","Chu-qur","Cha-ra","Cho-lar","Chu-luk"], step3:["Cha-yla-chi","Cho-pon-lik","Chu-qur-lik","Cha-ra-la-moq","Cho-lar-chi","Chu-luk-lik"] },
+        "Ng":{ step1:["Ng-a","Ng-u","Ng-o","Ng-e","Ng-i","Ng-a"], step2:["Ng-o-li","Ng-a-na","Ng-u-lar","Ng-o-ra","Ng-a-li","Ng-i-za"], step3:["Ng-o-li-chi","Ng-a-na-lik","Ng-u-lar-chi","Ng-o-ra-lik","Ng-a-li-lar","Ng-i-za-li"] }
+    };
+
+    const alphabet = ["A", "B", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "X", "Y", "Z", "O'", "G'", "Sh", "Ch", "Ng"];
+
+    let userName = "";
+    let currentLetterIdx = 0;
+    let currentStep = 1;
+    let currentWordIdx = 0;
+    let currentWordsList = [];
+
+    // Tizimga kirish va to'liq ekran
+    function startApp() {
+        const input = document.getElementById('user-name');
+        if (input.value.trim() === "") {
+            input.style.borderColor = "#ff4444";
+            setTimeout(() => input.style.borderColor = "var(--border)", 1000);
+            return;
+        }
+        userName = input.value.trim();
+        document.getElementById('greeting-text').innerText = `Salom, ${userName}!`;
+        
+        // Fullscreen so'rovi
+        let elem = document.documentElement;
+        if (elem.requestFullscreen) { elem.requestFullscreen().catch(err=>{}); }
+        else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen().catch(err=>{}); }
+        
+        document.getElementById('welcome-view').style.display = 'none';
+        document.getElementById('app-shell').style.display = 'flex';
+        initGrid();
+    }
+
+    function initGrid() {
+        const grid = document.getElementById('alphabet-grid');
+        grid.innerHTML = '';
+        alphabet.forEach((letter, index) => {
+            let btn = document.createElement('div');
+            btn.className = 'letter-btn fade-in';
+            btn.style.animationDelay = `${index * 0.02}s`;
+            btn.innerText = letter;
+            btn.onclick = () => openFocus(index);
+            grid.appendChild(btn);
+        });
+    }
+
+    function openFocus(index) {
+        currentLetterIdx = index;
+        currentStep = 1;
+        currentWordIdx = 0;
+        
+        document.getElementById('main-view').style.display = 'none';
+        document.getElementById('focus-view').style.display = 'flex';
+        
+        loadStepData();
+    }
+
+    function exitFocus() {
+        document.getElementById('focus-view').style.display = 'none';
+        document.getElementById('main-view').style.display = 'block';
+    }
+
+    function loadStepData() {
+        let letter = alphabet[currentLetterIdx];
+        document.getElementById('focus-letter-title').innerText = `${letter} ${letter.toLowerCase()}`;
+        document.getElementById('step-indicator').innerText = `${currentStep}-qadam`;
+
+        if(currentStep === 1) currentWordsList = db[letter].step1;
+        if(currentStep === 2) currentWordsList = db[letter].step2;
+        if(currentStep === 3) currentWordsList = db[letter].step3;
+
+        showCurrentWord();
+    }
+
+    function showCurrentWord() {
+        const wordContainer = document.getElementById('current-word');
+        const nextBtn = document.getElementById('next-btn');
+        
+        // Animatsiya uchun eski so'zni o'chirish
+        wordContainer.classList.remove('fade-in');
+        void wordContainer.offsetWidth; // reflow trigger
+        
+        let word = currentWordsList[currentWordIdx];
+        let syllables = word.split('-');
+        
+        // Bo'g'inlarni och-to'q rangda ajratish (Gemini style)
+        let formattedHTML = syllables.map((s, idx) => {
+            let colorClass = `syl-${(idx % 3) + 1}`;
+            return `<span class="${colorClass}">${s}</span>`;
+        }).join('<span style="color:var(--border)">-</span>');
+        
+        wordContainer.innerHTML = formattedHTML;
+        wordContainer.classList.add('fade-in');
+
+        // Tugma holatini o'zgartirish
+        if (currentWordIdx === currentWordsList.length - 1 && currentStep === 3) {
+            nextBtn.innerHTML = "Ajoyib! Keyingi harf →";
+            nextBtn.classList.remove('btn-primary-action');
+        } else {
+            nextBtn.innerHTML = "Keyingisi →";
+            nextBtn.classList.add('btn-primary-action');
+        }
+    }
+
+    function nextAction() {
+        if (currentWordIdx < currentWordsList.length - 1) {
+            // Shu qadamdagi keyingi so'z
+            currentWordIdx++;
+            showCurrentWord();
+        } else {
+            // Qadam tugadi
+            if (currentStep < 3) {
+                currentStep++;
+                currentWordIdx = 0;
+                loadStepData();
+            } else {
+                // Harf butunlay tugadi, avtomatik keyingi harfga o'tish
+                if (currentLetterIdx < alphabet.length - 1) {
+                    currentLetterIdx++;
+                    currentStep = 1;
+                    currentWordIdx = 0;
+                    loadStepData();
+                } else {
+                    // Butun alifbo tugadi
+                    alert(`Barakalla ${userName}! Siz butun alifboni tugatdingiz!`);
+                    exitFocus();
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>
