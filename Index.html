@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#09090b">
+    <title>XOLƎRIƆ Nano</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%2309090b'/><text x='256' y='360' font-size='350' font-family='sans-serif' font-weight='bold' fill='%234f46e5' text-anchor='middle'>X</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%2309090b'/><text x='256' y='360' font-size='350' font-family='sans-serif' font-weight='bold' fill='%234f46e5' text-anchor='middle'>X</text></svg>">
+    
+    <link rel="manifest" href='data:application/manifest+json,{"name":"XOLƎRIƆ Nano","short_name":"XOLƎRIƆ","start_url":".","display":"standalone","background_color":"#09090b","theme_color":"#09090b","icons":[{"src":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzA5MDkwYiIvPjx0ZXh0IHg9IjI1NiIgeT0iMzYwIiBmb250LXNpemU9IjM1MCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjNGY0NmU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5YPC90ZXh0Pjwvc3ZnPg==","sizes":"512x512","type":"image/svg+xml"}]}'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #09090b;
+            --surface: rgba(24, 24, 27, 0.7);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #4f46e5;
+            --accent-glow: rgba(79, 70, 229, 0.4);
+            --text: #f4f4f5;
+            --text-dim: #71717a;
+            --success: #10b981;
+            --gold: #fbbf24;
+            --font: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font); user-select: none; -webkit-tap-highlight-color: transparent; outline: none; }
+        
+        body { background-color: var(--bg); color: var(--text); height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; overscroll-behavior-y: none; }
+
+        .glass { background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--border); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes successPop { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* 1. WELCOME SECTION */
+        #welcome-view { position: fixed; inset: 0; z-index: 1000; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; transition: opacity 0.6s ease; }
+        .brand-logo { font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 8px; background: linear-gradient(to bottom, #fff, #52525b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .login-card { width: 100%; max-width: 380px; padding: 40px 30px; border-radius: 32px; text-align: center; }
+        .name-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 16px; padding: 18px; color: #fff; font-size: 1.2rem; text-align: center; margin-bottom: 24px; transition: 0.3s; }
+        .name-input:focus { border-color: var(--accent); }
+
+        /* 2. MAIN DASHBOARD */
+        #app-shell { display: none; flex: 1; flex-direction: column; height: 100%; opacity: 0; transition: 0.5s; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: env(safe-area-inset-top, 20px) 24px 20px 24px; border-bottom: 1px solid var(--border); background: rgba(9, 9, 11, 0.5); backdrop-filter: blur(10px); }
+        .xp-chip { background: var(--gold); color: #451a03; padding: 6px 14px; border-radius: 100px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+
+        /* 3. ALPHABET HUB */
+        #hub-view { flex: 1; overflow-y: auto; padding: 24px; scrollbar-width: none; }
+        .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 14px; max-width: 900px; margin: 0 auto; padding-bottom: 100px; }
+        .letter-tile { aspect-ratio: 1; border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 700; position: relative; transition: 0.2s; cursor: pointer; }
+        .letter-tile:active { transform: scale(0.9); }
+        .tile-progress { position: absolute; bottom: 10px; width: 40px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .tile-progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s; }
+
+        /* 4. FOCUS LEARNING (BOSQICH) - YUQORIGA SURILDI */
+        #focus-view { display: none; flex: 1; flex-direction: column; position: relative; }
+        .focus-nav { padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .step-label { color: var(--accent); font-weight: 800; font-size: 0.9rem; letter-spacing: 2px; }
+        
+        /* Klaviatura yopib qo'ymasligi uchun flex-start va padding-top berildi */
+        .learning-core { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 8vh 24px 24px 24px; }
+        .target-word { font-size: clamp(3rem, 10vw, 5.5rem); font-weight: 800; margin-bottom: 30px; text-align: center; line-height: 1.1; }
+        .vocal { color: #fff; }
+        .consonant { color: var(--accent); }
+        .dash { opacity: 0.15; padding: 0 4px; }
+
+        /* INPUT SYSTEM */
+        .input-wrapper { position: relative; width: 100%; max-width: 420px; }
+        .mirror-field { min-height: 80px; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 2.4rem; font-weight: 700; letter-spacing: 4px; color: var(--text); position: relative; border: 2px solid var(--border); transition: 0.3s; background: rgba(0,0,0,0.5); }
+        .mirror-field.match { border-color: var(--success); color: var(--success); text-shadow: 0 0 20px rgba(16,185,129,0.3); animation: successPop 0.4s ease; }
+        .cursor { width: 4px; height: 3rem; background: var(--accent); margin-left: 10px; animation: blink 1s infinite; border-radius: 4px; }
+        
+        /* Klaviaturani chaqirish uchun input (ko'rinmas) */
+        #hidden-input { position: absolute; top: -50px; opacity: 0; pointer-events: none; }
+
+        .btn-next { margin: 15px 24px 24px 24px; padding: 18px; border-radius: 20px; font-size: 1.1rem; font-weight: 800; text-align: center; transition: 0.4s; opacity: 0.2; pointer-events: none; background: var(--text); color: var(--bg); border: none; z-index: 10;}
+        .btn-next.active { opacity: 1; pointer-events: auto; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); cursor: pointer; }
+
+        /* GUARD */
+        #guard-overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.95); backdrop-filter: blur(40px); display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+
+        ::-webkit-scrollbar { display: none; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="guard-overlay">
+        <div style="font-size: 4rem; margin-bottom: 20px;">🔒</div>
+        <h2 style="font-size: 2rem; margin-bottom: 12px;">XOLƎRIƆ Qulflangan</h2>
+        <p style="color: var(--text-dim); margin-bottom: 36px; line-height: 1.6;">O'quv jarayoni xavfsizligi va chalg'imaslik uchun dastur to'liq ekranda bo'lishi shart.</p>
+        <button class="glass" style="padding: 18px 40px; border-radius: 20px; color: #fff; font-weight: 700; cursor: pointer;" onclick="requestAccess()">DAVOM ETTIRISH</button>
+    </div>
+
+    <div id="welcome-view">
+        <div class="brand-logo">XOLƎRIƆ</div>
+        <div style="color: var(--accent); font-weight: 700; letter-spacing: 5px; margin-bottom: 40px; font-size: 0.8rem;">NANO</div>
+        
+        <div class="login-card glass">
+            <input type="text" id="name-input" class="name-input" placeholder="Ismingiz" autocomplete="off" enterkeyhint="done">
+            <button class="glass" style="width: 100%; padding: 20px; border-radius: 18px; background: #fff; color: #000; font-weight: 800; border: none; cursor: pointer;" onclick="initApp()">KIRISH</button>
+        </div>
+    </div>
+
+    <div id="app-shell">
+        <header>
+            <div style="font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;">XOLƎRIƆ <span id="current-char-label" style="color: var(--accent);">●</span></div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span id="user-display" style="font-weight: 600; font-size: 0.85rem; color: var(--text-dim);">Siz</span>
+                <div class="xp-chip">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <span id="xp-count">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main id="hub-view">
+            <div class="hub-grid" id="alphabet-grid"></div>
+        </main>
+
+        <section id="focus-view">
+            <div class="focus-nav">
+                <button class="glass" style="padding: 10px 20px; border-radius: 14px; font-weight: 600; color: #fff; border: none; cursor: pointer;" onclick="closeFocus()">← CHIQISH</button>
+                <div class="step-label" id="step-id">1-BOSQICH</div>
+                <button class="glass" style="width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer;" onclick="speakCurrent()">🔊</button>
+            </div>
+            
+            <div class="learning-core" onclick="forceFocus()">
+                <div class="target-word" id="word-box"></div>
+                
+                <div class="input-wrapper">
+                    <div class="mirror-field" id="mirror-field">
+                        <span id="text-mirror"></span><span class="cursor" id="input-cursor"></span>
+                    </div>
+                </div>
+                
+                <div id="status-msg" style="margin-top: 20px; font-weight: 700; color: var(--success); opacity: 0; transition: 0.3s; font-size: 1.1rem;">BARAKALLA! +10 XP</div>
+            </div>
+
+            <input type="text" id="hidden-input" autocomplete="off" spellcheck="false" enterkeyhint="next">
+            
+            <button class="btn-next" id="btn-next" onclick="handleNext()">KEYINGISI →</button>
+        </section>
+    </div>
+
+<script>
+    // --- APP INITIALIZATION & LOCALSTORAGE ---
+    window.addEventListener('DOMContentLoaded', () => {
+        // Avval kiritilgan ismni xotiradan olish
+        const savedName = localStorage.getItem('xoleric_username');
+        if (savedName) {
+            document.getElementById('name-input').value = savedName;
+        }
+    });
+
+    const AudioEngine = {
+        ctx: new (window.AudioContext || window.webkitAudioContext)(),
+        play(freq, type = 'sine', duration = 0.1) {
+            if(this.ctx.state === 'suspended') this.ctx.resume();
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            g.gain.setValueAtTime(0.1, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+            osc.connect(g); g.connect(this.ctx.destination);
+            osc.start(); osc.stop(this.ctx.currentTime + duration);
+        },
+        click() { this.play(800, 'sine', 0.05); },
+        success() {
+            this.play(523, 'triangle', 0.1);
+            setTimeout(() => this.play(659, 'triangle', 0.1), 80);
+            setTimeout(() => this.play(783, 'triangle', 0.2), 160);
+        }
+    };
+
+    // --- BAZA QISQARTIRILGAN (Sizning oldingi bazangiz bilan bir xil, shu yerda saqlanadi) ---
+    const DB = {
+        "A":{ step1:["A-ka", "A-or", "A-ra", "A-na", "A-to", "A-yiq"], step2:["A-nor", "A-lo-qa", "A-ra-va", "A-za-mat", "A-lif-bo", "A-dras"], step3:["Av-to-mo-bil", "A-ra-la-shuv", "A-sos-la-moq", "A-niq-la-ma", "Ax-bo-rot", "A-yov-siz"], step4:["A-ka-de-mi-ya", "A-vi-a-tsi-ya", "A-gro-nom", "A-do-lat-li", "A-dras-mon", "A-ziz-lik"], step5:["A-sos-chi-lar", "A-yov-siz-lik", "An-a-na-viy", "A-ha-mi-yat", "A-niq-lik-lar", "Ak-tyor-lar"], step6:["A-vi-a-tsi-ya-chi", "A-ka-de-mik-lar", "A-sos-lan-ma-gan", "A-ha-mi-yat-siz", "A-ra-lash-ti-rish", "A-chi-nar-li-roq"] },
+        "B":{ step1:["Bo-la", "Bo-bo", "Bu-vi", "Bo-g'i", "Be-da", "Ba-ho"], step2:["Ba-liq", "Bi-lim", "Ba-ho-dir", "Be-mor", "Ba-ra-ka", "Bay-ram"], step3:["Bosh-lan-g'ich", "Bi-la-gu-zuk", "Ba-qa-te-rak", "Buz-g'un-chi", "Boy-la-moq", "Be-g'u-bor"], step4:["Ba-ra-ka-li", "Bi-lim-don", "Be-min-nat", "Ba-ho-la-moq", "Bu-loq-lar", "Be-va-fo"], step5:["Bi-lim-don-lik", "Ba-qa-te-rak-lar", "Bo-yo-vut-lik", "Be-to-qat-lik", "Bosh-lan-ma-gan", "Buy-ruq-boz"], step6:["Bi-la-gu-zuk-siz", "Buz-g'un-chi-lik", "Ba-ho-dir-lik-lar", "Bosh-bo-shiq-lik", "Be-pa-ro-sat-lik", "Bay-ram-o-na"] },
+        "D":{ step1:["Da-da", "Da-la", "Do-ri", "Da-vo", "Do-hiy", "Do-ira"], step2:["Daf-tar", "Dav-lat", "Da-raxt", "Dun-yo", "Deh-qon", "Da-ro-mad"], step3:["Dav-lat-shoh", "Do-vyu-rak", "Das-tur-xon", "Dil-kash-lik", "Dast-goh", "Da-vo-la"], step4:["Da-vo-la-nish", "Dun-yo-qar-ash", "Deh-qon-chi", "Daf-tar-cha", "Da-ro-mad-li", "Do-vyu-rak-lar"], step5:["Dav-lat-lar-a-ro", "Da-ro-mad-siz", "Das-tur-xon-chi", "Dun-yo-viy-lik", "Deh-qon-bo-zor", "Do-i-ra-siz"], step6:["Dav-lat-shu-nos-lik", "Do-vyu-rak-lar-cha", "Da-ro-mad-siz-lik", "Das-tur-xon-chi-lik", "Dil-kash-lik-lar-dan", "Deh-qon-chi-lik-siz"] },
+        "E":{ step1:["E-ga", "E-lak", "E-shik", "Er-tak", "E-kin", "E-lat"], step2:["E-tik", "E-lon", "E-li-miz", "E-ti-bor", "E-ga-si", "E-ski"], step3:["E-lak-chi", "E-kin-zor", "E-rin-choq", "E-ti-qod", "E-zoz-lash", "E-shi-tish"], step4:["E-lon-no-ma", "E-ti-bor-li", "E-zgul-lik", "E-ti-roz-lar", "E-ko-lo-gi-ya", "E-kin-zor-lar"], step5:["E-rin-choq-lik", "E-ti-bor-siz", "E-ti-qod-li", "E-zoz-la-moq", "E-lek-tro-ni-ka", "E-lon-lar-dan"], step6:["E-ti-bor-siz-lik", "E-rin-choq-lar-cha", "E-ti-qod-siz-lik", "E-lek-tro-tex-ni-ka", "E-ko-lo-gi-ya-viy", "E-zoz-lan-ma-gan"] },
+        "F":{ step1:["Fa-zo", "Fi-do", "Fo-iz", "Fa-ol", "Fer-ma", "Fa-qir"], step2:["Fan-lar", "Fo-nar", "Fax-riy", "Fik-rim", "Fer-mer", "Fa-raz"], step3:["Fa-o-li-yat", "Faxr-la-nish", "Fi-do-kor", "Fan-tex-ni-ka", "Farq-la-moq", "Fikr-lash-moq"], step4:["Fa-zi-lat-li", "Far-zand-lar", "Fa-lo-kat-li", "Fa-o-li-yat-da", "Fikr-lash-ish", "Foy-da-lan-ish"], step5:["Fa-o-li-yat-siz", "Faxr-la-nar-li", "Fi-do-kor-lik", "Foy-da-lan-uv-chi", "Fa-las-tin-lik", "Far-zand-siz-lik"], step6:["Fa-o-li-yat-siz-lik", "Fi-do-kor-o-na", "Foy-da-la-nil-ma-gan", "Fa-zi-lat-lar-i-miz", "Farq-lan-ma-gan-lik", "Fikr-la-sha-o-lish"] },
+        "G":{ step1:["Gu-li", "Gav-da", "Gi-lam", "Ga-do", "Gu-ruh", "Ga-pi"], step2:["Gul-don", "Gul-xan", "Gul-chi", "Ga-ram", "Gar-mon", "Gu-voh"], step3:["Gu-lis-ton", "Gul-par-var", "Gul-xan-chi", "Gi-lam-doz", "Gar-dish-li", "Ga-pi-rish"], step4:["Gu-lis-ton-lik", "Gu-voh-no-ma", "Go'-zal-lik", "Gu-rul-lash", "Ga-zak-li", "Gu-noh-kor"], step5:["Go'-zal-lik-lar", "Gu-voh-no-ma-si", "Gul-par-var-lik", "Ga-pi-ril-ma-gan", "Gi-lam-doz-lik", "Gu-noh-kor-lar"], step6:["Go'-zal-lash-ti-rish", "Gu-lis-ton-lik-lar", "Gu-voh-no-ma-siz", "Gul-par-var-lar-cha", "Ga-pi-ri-la-yo-tgan", "Gi-lam-doz-lik-da"] },
+        "H":{ step1:["Ha-vo", "Ha-yo", "Hi-dla", "Ha-sad", "Hur-mat", "Ha-li"], step2:["Ho-zir", "Hu-nar", "Ha-ram", "Ho-ji", "Huj-jat", "Hay-kal"], step3:["Ha-qi-qat", "Hu-nar-mand", "Ho-zir-gi", "Ha-ram-xo-na", "Huj-jat-xo-na", "Ho-zir-ja-vob"], step4:["Ha-qi-qiy", "Hu-nar-siz", "Hay-kal-ta-rosh", "Ha-ra-kat-da", "Ha-ya-jon-li", "Hur-mat-siz"], step5:["Ha-qi-qat-dan", "Hu-nar-mand-lik", "Ha-ra-kat-chan", "Hay-kal-ta-rosh-lik", "Ha-ya-jon-la-nish", "Ho-zir-ja-vob-lik"], step6:["Ha-qi-qat-par-var", "Ha-ra-kat-chan-lik", "Hur-mat-siz-lik-lar", "Hay-kal-ta-rosh-lik-da", "Ha-ya-jon-lan-ma-gan", "Hu-nar-mand-chi-lik"] },
+        "I":{ step1:["I-lon", "I-pak", "I-rim", "Ik-ki", "I-liq", "I-shing"], step2:["I-shonch", "I-lo-va", "I-bo-ra", "Ilm-li", "I-job", "I-jod"], step3:["I-lo-va-lar", "I-shonch-li", "I-bo-ra-lar", "I-jod-kor", "Il-miy-lik", "I-jo-bat"], step4:["I-shonch-siz", "I-jod-kor-lar", "I-bro-him", "I-bo-ra-siz", "I-chim-lik", "Iq-ti-sod"], step5:["I-shonch-siz-lik", "I-jod-kor-lik", "I-chim-lik-lar", "Iq-ti-sod-chi", "I-lo-va-lar-dan", "Ilm-siz-lik"], step6:["Iq-ti-so-di-yot", "I-jod-kor-lik-da", "I-shonch-siz-lik-dan", "Iq-ti-dor-li-lar", "Ish-bi-lar-mon-lik", "Is-te-mol-chi-lik"] },
+        "J":{ step1:["Ju-da", "Jo'-ja", "Ja-zo", "Jiy-da", "Ja-sur", "Jo-nim"], step2:["Ja-vob", "Jo'-nat", "Jahl-dor", "Joy-la", "Ja-hon", "Juft-lik"], step3:["Ja-hon-gir", "Joy-la-shuv", "Ja-za-va", "Ja-vob-gar", "Ja-sur-lik", "Jin-ni-lik"], step4:["Ja-vob-siz", "Ja-hal-dor", "Ja-fo-kash", "Jon-ku-yar", "Ja-mi-yat", "Ji-no-yat"], step5:["Ja-vob-gar-lik", "Ja-fo-kash-lik", "Ji-no-yat-kor", "Jon-ku-yar-lik", "Ja-mi-yat-da", "Ja-sur-lik-lar"], step6:["Ji-no-yat-kor-lik", "Ja-vob-gar-siz-lik", "Ja-mi-yat-shu-nos", "Jon-ku-yar-lik-dan", "Ja-za-va-la-nish", "Jis-mo-niy-lik"] },
+        "K":{ step1:["Ka-bi", "Ku-ni", "Ke-cha", "Ko'-rpa", "Ku-rak", "Ki-shi"], step2:["Ki-tob", "Kar-rak", "Ko-mil", "Ki-yim", "Ka-lom", "Kasb-kor"], step3:["Ki-tob-xon", "Ko-mil-lik", "Ka-lam-don", "Ke-la-jak", "Ka-la-ka", "Ku-za-tish"], step4:["Ki-tob-xo-na", "Ki-yim-ke-chak", "Ko-i-not", "Ku-za-tuv-chi", "Ka-fo-lat", "Ko'-rsat-ma"], step5:["Ki-tob-xon-lik", "Ka-fo-lat-li", "Ko'-rsat-ma-li", "Ke-la-jak-da-gi", "Kam-ta-rin", "Ko'p-chi-lik"], step6:["Ki-tob-xo-na-chi", "Kam-ta-rin-lik-lar", "Ko'-rsat-kich-lar", "Ka-fo-lat-siz-lik", "Ku-za-tuv-chi-lik", "Ko'p-chi-lik-ning"] },
+        "L":{ step1:["Lo-la", "La-gan", "Lu-g'at", "La-qab", "Loy-qa", "Li-kash"], step2:["Li-mon", "La-ziz", "Li-bos", "Lo-chin", "Lay-lak", "Laz-zat"], step3:["Lo-yi-ha", "Li-mon-zor", "Lo-la-zor", "Li-bos-lar", "Laz-zat-li", "La-to-fat"], step4:["Lo-yi-ha-chi", "La-bo-rant", "Lu-g'at-lar", "La-yo-qat", "La-to-fat-li", "Lay-lak-lar"], step5:["La-bo-ra-to-ri-ya", "La-yo-qat-siz", "Lu-g'at-shu-nos", "Lo-yi-ha-kash", "Laz-zat-la-nish", "Li-bo-si-miz"], step6:["Lo-yi-ha-lash-ti-rish", "La-yo-qat-siz-lik", "Lu-g'at-shu-nos-lik", "La-bo-ra-to-ri-ya-da", "Laz-zat-lan-mas-lik", "La-to-fat-li-roq"] },
+        "M":{ step1:["Mo-mo", "Ma-qol", "Ma-no", "Me-va", "Ma-na", "Mo-sh"], step2:["Mak-tab", "Man-ba", "Mo-hir", "Mi-joz", "Mas-jid", "Ma-qom"], step3:["Ma-shi-na", "Mi-sol-lar", "Mo-hir-lik", "Mod-diy-lik", "Mu-al-lim", "Ma-sa-la"], step4:["Ma-shi-na-soz", "Mas-ul-li", "Mus-ta-qil", "Mi-joz-lar", "Ma-sal-liq", "Mav-zu-lar"], step5:["Mas-u-li-yat", "Mus-ta-qil-lik", "Ma-shi-na-lar", "Mu-al-lim-lik", "Mam-la-kat", "Man-fa-at-li"], step6:["Mas-u-li-yat-siz", "Mus-ta-qil-lik-da", "Ma-shi-na-soz-lik", "Mam-la-ka-ti-miz", "Man-fa-at-dor-lik", "Mu-vaf-fa-qi-yat"] },
+        "N":{ step1:["No-mi", "Ni-yat", "No-ta", "Na-vo", "Ne-ga", "Na-qd"], step2:["Na-fas", "Ne-mat", "Nav-bat", "No-rin", "Ni-shon", "No-don"], step3:["Na-fa-qa", "Ni-zom-li", "Na-mu-na", "Na-ti-ja", "Ni-ho-yat", "No-haq-lik"], step4:["Ni-zom-no-ma", "No-don-lik", "Nav-bat-chi", "Ni-shon-la-moq", "Na-mu-na-li", "Na-ti-ja-li"], step5:["Na-fa-qa-xo'r", "No-don-lik-lar", "No-ma-lum-lik", "Na-ti-ja-siz", "Nuq-son-siz-lik", "No-haq-lik-lar"], step6:["Na-ti-ja-dor-lik", "No-ma-lum-lik-dan", "Na-mu-na-viy-lik", "Nav-bat-chi-lik-da", "Ni-zom-no-ma-siz", "No-mu-ta-no-sib"] },
+        "O":{ step1:["O-ta", "O-na", "O-yoq", "O-lov", "O-xir", "O-g'iz"], step2:["O-voz", "Ol-ma", "O-chiq", "O-qil", "O-dam", "O-qim"], step3:["O-na-si", "O-lim-lar", "O-vo-za", "O-dam-zod", "O-son-lik", "O-qil-lik"], step4:["O-na-ti-li", "O-chiq-lik", "O-qil-o-na", "O-zo-da", "O-mo-nat", "O-la-mon"], step5:["O-lim-pi-ya", "O-mo-nat-dor", "O-chiq-oy-din", "O-zo-da-lik", "O-la-mon-chi", "O-dam-gar-chi-lik"], step6:["O-chiq-ko'n-gil", "O-dam-gar-chi-lik-siz", "O-mo-nat-dor-lik", "O-lim-pi-a-da", "O-chiq-oy-din-lik", "O-ziq-ov-qat-lar"] },
+        "P":{ step1:["Pax-ta", "Pi-yoz", "Pa-dar", "Pul-li", "Pa-ri", "Po-k"], step2:["Pe-shin", "Pak-ka", "Pu-fak", "Poch-ta", "Pa-lov", "Po-liz"], step3:["Pul-lik", "Par-da", "Pi-shiq", "Pax-ta-kor", "Par-hez-kor", "Po-liz-chi"], step4:["Poch-ta-xo-na", "Par-doz-chi", "Pa-lov-xo'r", "Pa-la-rit", "Paj-mur-da", "Poy-ab-zal"], step5:["Pax-ta-kor-lik", "Par-doz-chi-lik", "Pay-poq-fu-rush", "Poy-tax-ti-miz", "Pur-ma-no-lik", "Past-kash-lik"], step6:["Par-hez-kor-lik-lar", "Poy-ab-zal-do'-zi", "Past-kash-lik-la-ri", "Pe-sha-na-do'-zi", "Pax-ta-te-rish-da", "Pur-vi-qor-lik-lar"] },
+        "Q":{ step1:["Qa-ri", "Qul-fi", "Qo-zi", "Qon-li", "Qa-d", "Qum-li"], step2:["Qa-mish", "Qa-tiq", "Qu-yon", "Qa-lam", "Qo-zon", "Qa-ror"], step3:["Qat-tiq", "Qu-yosh", "Qo-lip", "Qo-zon-cha", "Qu-yosh-li", "Qa-ror-goh"], step4:["Qa-lam-kash", "Qo-lip-la-moq", "Qulf-la-moq", "Qo'-shim-cha", "Qo-nu-niy", "Qi-zi-qar"], step5:["Qo-nun-chi-lik", "Qo'-shim-cha-lar", "Qa-lam-tas-vir", "Qad-ri-yat", "Qa-ror-goh-da", "Qo-ni-qar-li"], step6:["Qad-ri-yat-lar-dan", "Qo-nun-bu-zar-lik", "Qa-no-at-la-nish", "Qo-ni-qar-siz-lik", "Qo'-shim-cha-siz", "Qa-lam-tas-vir-da"] },
+        "R":{ step1:["Ro-zi", "Ra-is", "Ros-ti", "Ra-ng", "Ruf-ti", "Ri-m"], step2:["Ra-qam", "Ro-bot", "Ras-som", "Rish-ta", "Ray-hon", "Ruch-ka"], step3:["Ra-fiq", "Ri-voj", "Ri-so-la", "Ra-qam-li", "Ro-hat-lan", "Ras-miy"], step4:["Ras-som-chi", "Ri-so-la-chi", "Ro-bot-tex", "Rish-ta-lar", "Rav-naq-li", "Ras-mi-yat"], step5:["Ri-voj-la-nish", "Ras-mi-yat-chi", "Ro-hat-lan-moq", "Ras-som-chi-lik", "Ra-qam-la-shish", "Rah-bar-lik"], step6:["Ri-voj-lan-ti-rish", "Ras-mi-yat-chi-lik", "Ra-qam-lash-ti-rish", "Rah-bar-siz-lik-lar", "Res-pub-li-ka", "Ru-hi-yat-shu-nos"] },
+        "S":{ step1:["Sa-har", "So-ya", "Su-v", "Si-r", "So-f", "Sa-n"], step2:["Sa-vat", "Sa-riq", "So-vuq", "Sa-noq", "So-at", "Su-li"], step3:["Su-vor", "Sa-lom", "Sa-voq", "Sar-son", "Sa-vat-cha", "Sez-gir"], step4:["So-at-soz", "Su-vo-riy", "Sa-voq-li", "Sez-gir-lik", "Sa-no-at", "Sa-lo-mat"], step5:["Sa-lom-lash-moq", "Sa-no-at-chi", "Sa-lo-mat-lik", "Sa-ma-ra-li", "Sar-son-gar-lik", "Sir-li-lik"], step6:["Sa-lo-mat-lik-lar", "Sa-no-at-la-shish", "Sa-ma-ra-dor-lik", "Sa-lom-la-shi-shib", "Sa-mi-mi-yat-li", "Su-ran-kash-lik-lar"] },
+        "T":{ step1:["To-la", "Tu-ya", "Ti-l", "To-g'", "Ta-n", "To-j"], step2:["To-voq", "Til-la", "To-g'a", "Tul-ki", "Ta-lim", "To-mir"], step3:["Tu-zuk", "Ta-rif", "Ti-kin", "Tu-rar", "Ta-lim-ot", "Tu-zuk-lik"], step4:["To-mir-lar", "Ta-rif-no-ma", "To-mo-sha", "Tu-rar-joy", "Ta-bi-at", "Ta-raq-qiy"], step5:["To-mo-sha-bin", "Ta-bi-at-da", "Ta-raq-qi-yot", "Ta-la-ba-lik", "Tash-ki-lot-chi", "Taj-ri-ba"], step6:["Ta-raq-qi-yot-da", "Tash-ki-lot-chi-lik", "Taj-ri-ba-siz-lik", "Ta-shab-bus-kor-lik", "To-mo-sha-bin-lar", "Ta-lim-tar-bi-ya"] },
+        "U":{ step1:["U-ka", "U-ya", "Un-li", "Uz-ra", "Uy-da", "U-l"], step2:["U-kam", "U-zun", "U-mid", "U-zum", "U-shoq", "U-rug'"], step3:["U-loq", "U-lan", "U-yat", "U-quv", "U-zum-zor", "U-rug'-chi"], step4:["U-lan-ma", "U-loq-chi", "U-yat-li", "U-mid-vor", "U-shal-mas", "U-lu-g'i"], step5:["U-mid-vor-lik", "U-quv-siz-lik", "U-yat-siz-lik", "Uy-g'o-nish-da", "U-mum-lash-ma", "Uz-luk-siz"], step6:["U-mum-lash-ti-rish", "Uz-luk-siz-lik-lar", "U-yat-siz-lik-dan", "Uy-g'un-lash-ti-rish", "U-zoq-ni-ko'-rar", "U-mid-baxsh-lik-lar"] },
+        "V":{ step1:["Va-fo", "Vo-ya", "Va-qt", "Va-k", "Va-y", "Va-h"], step2:["Va-tan", "Va-raq", "Va-kil", "Vo-diy", "Vaz-ni", "Va-li"], step3:["Vij-don", "Vi-deo", "Vil-ka", "Var-rak", "Vo-diy-lik", "Vi-lo-yat"], step4:["Vi-deo-lar", "Va-si-yat", "Va-fo-dor", "Va-hi-ma", "Va-zi-fa", "Vazn-siz-lik"], step5:["Vi-lo-yat-da", "Vij-don-siz-lik", "Va-fo-dor-lik", "Va-hi-ma-li", "Va-zi-fa-lar", "Vaq-tin-cha"], step6:["Vi-lo-yat-lar-a-ro", "Vaz-min-lik-dan", "Va-zi-fa-dor-lik", "Vaq-tin-cha-lik-lar", "Vo-qe-lik-lar-ni", "Va-tan-par-var-lik"] },
+        "X":{ step1:["Xa-to", "Xo-la", "Xa-fa", "Xo-s", "Xi-l", "Xo-r"], step2:["Xat-lar", "Xu-mi", "Xa-rit", "Xal-qim", "Xo-na", "Xur-mo"], step3:["Xa-rid", "Xa-bar", "Xir-mon", "Xa-ri-dor", "Xur-mo-zor", "Xal-qa-ro"], step4:["Xo-na-don", "Xa-bar-dor", "Xir-mon-jo", "Xiz-mat-chi", "Xi-yo-nat", "Xo-ti-ra"], step5:["Xa-ri-dor-lar", "Xo-na-don-lik", "Xa-bar-siz-lik", "Xiz-mat-chi-lik", "Xo-ti-ra-li", "Xavf-siz-lik"], step6:["Xal-qa-ro-la-shuv", "Xa-bar-dor-lik-dan", "Xi-yo-nat-kor-lik", "Xo-ti-ra-siz-lik", "Xavf-siz-lik-la-ri", "Xay-ri-xoh-lik-dan"] },
+        "Y":{ step1:["Ya-ngi", "Ya-rim", "Yo'-q", "Yo-d", "Yo-z", "Yo-t"], step2:["Yu-rak", "Yil-gi", "Yo-vuz", "Yo-qut", "Yo-zuv", "Yu-z"], step3:["Yul-g'un", "Yo'-nal", "Yuk-la", "Yax-shi", "Ya-qin", "Yo-zuv-chi"], step4:["Yuk-la-moq", "Ya-rim-ta", "Yoz-gi-cha", "Yu-qo-ri", "Ya-ra-tish", "Yu-ruv-chi"], step5:["Yax-shi-lik-lar", "Ya-ngi-lik-lar", "Yurt-dosh-lar", "Yo'-na-lish-li", "Yu-qum-li-lik", "Ya-ra-tuv-chi"], step6:["Yo'-nal-ti-ril-gan", "Ya-qin-lash-ti-rish", "Ya-ra-tuv-chan-lik", "Ye-tish-mov-chi-lik", "Yu-qo-ri-da-gi", "Yax-shi-lik-lar-dan"] },
+        "Z":{ step1:["Zi-na", "Za-ki", "Zo'-r", "Ze-b", "Zi-r", "Zu-v"], step2:["Zar-ba", "Zi-rak", "Za-far", "Za-rar", "Za-min", "Za-mon"], step3:["Zo-g'or", "Zo-na", "Zu-luk", "Zan-jir", "Za-mon-lar", "Zulm-kor"], step4:["Za-min-dor", "Za-rar-li", "Zo-riq-moq", "Zu-luk-lar", "Zi-yo-rak", "Zi-yo-fat"], step5:["Za-mo-na-viy", "Zi-yo-fat-li", "Zar-ba-dor-lar", "Zul-mat-li", "Zi-yo-rat-goh", "Za-far-li-lik"], step6:["Za-mo-na-viy-lik", "Zi-yo-li-lar-dan", "Za-ru-ri-yat-lar", "Za-rur-siz-lik-lar", "Zi-yo-rat-goh-lar", "Za-bar-dast-lik-lar"] },
+        "O'":{ step1:["O'-zi", "O'-y", "O'-q", "O'-t", "O'-n", "O'-ch"], step2:["O'-rik", "O'-rtoq", "O'-rdak", "O'-tish", "O'-yin", "O'-g'il"], step3:["O'-choq", "O'-rni", "O'-lim", "O'-zak", "O'-sim", "O'-rik-zor"], step4:["O'-g'il-cha", "O'-zak-li", "O'-yin-chi", "O'-rga-tish", "O'-tkir", "O'-qi-tuv"], step5:["O'-lim-la-ri", "O'-choq-chi", "O'-rtog'-im", "O'-qi-tuv-chi", "O'-quv-chi-lar", "O'-zga-rish"], step6:["O'-qi-tuv-chi-lik", "O'-zlash-ti-rish", "O'-yin-qad-roq", "O'-xshash-siz-lik", "O'-sim-lik-lar-ni", "O'-zga-ruv-chan"] },
+        "G'":{ step1:["G'-or", "G'-am", "G'-oz", "G'-isht", "G'-il", "G'-ash"], step2:["G'o'-za", "G'i-lof", "G'o-lib", "G'o-ya", "G'i-rom", "G'a-zab"], step3:["G'al-la", "G'o-yib", "G'u-rur", "G'am-xo'r", "G'il-dir", "G'oy-o-na"], step4:["G'o-zal-lik", "G'al-la-kor", "G'u-rur-li", "G'il-di-rak", "G'a-zab-li", "G'o-yo-na"], step5:["G'am-xo'r-lik", "G'al-la-don", "G'il-ja-yish", "G'a-nim-lik", "G'u-bor-siz", "G'a-la-yon"], step6:["G'am-xo'r-lik-lar", "G'al-la-kor-lik", "G'a-zab-la-nish", "G'ir-rom-lik-lar", "G'o-ya-viy-lik", "G'ay-rat-li-lik"] },
+        "Sh":{ step1:["Shu", "Sha-r", "Sho-h", "She-r", "Shi-r", "Sha-n"], step2:["Sha-har", "Shu-mi", "Sha-mo", "Shi-pa", "Sha-mol", "Shod-lik"], step3:["Shod-li", "Shi-rin", "Shu-kuh", "Sha-raf", "Shu-ur", "Shu-kr"], step4:["Sha-raf-li", "Sha-har-lar", "Shu-kuh-li", "Sha-mol-lar", "Shod-lik-lar", "Shu-kr-li"], step5:["Sha-har-li-lar", "Shi-fo-kor-lar", "Sho-shi-linch", "Sha-faq-li", "Sha-rob-xo-na", "Shi-ko-yat"], step6:["Shi-fo-kor-lik-da", "Sho-shi-linch-lik", "Shaf-qat-siz-lik", "Sha-raf-la-nish", "Shi-ko-yat-no-ma", "Sha-kar-ob-li-lik"] },
+        "Ch":{ step1:["Cho'-l", "Cho-y", "Cho-p", "Cha-q", "Che-k", "Chi-z"], step2:["Cha-qa", "Chu-qur", "Che-lak", "Chi-roq", "Chay-la", "Cho-pon"], step3:["Choy-nak", "Chuch-va", "Cha-na", "Cha-qir", "Cho'-ntak", "Cho'-loq"], step4:["Chay-la-chi", "Chu-qur-lik", "Cha-qir-moq", "Choy-nak-lar", "Chi-roq-chi", "Cha-man-zor"], step5:["Cho-pon-la-ri", "Cha-qi-ruv-chi", "Che-ga-ra-siz", "Chaq-qon-lik", "Chi-dam-li-lik", "Chor-va-dor-lar"], step6:["Che-ga-ra-chi-lik", "Chor-va-dor-lik-da", "Cha-qi-ril-ma-gan", "Chi-dam-siz-lik-lar", "Chul-g'ab-o-lish-di", "Chaq-moq-tosh-lar"] },
+        "Ng":{ step1:["To-ng", "So-ng", "Bo-ng", "Mi-ng", "Te-ng", "Ke-ng"], step2:["Ta-nga", "Ma-ngu", "Ya-ngi", "To-ngi", "Mi-ngi", "De-ngiz"], step3:["Sha-ng'i", "Si-ngil", "Jang-chi", "Ba-ngi", "Che-ngal", "Be-ngal"], step4:["Ta-nga-lar", "Man-gu-lik", "Tong-gi-lar", "Sin-gil-lar", "Keng-lik-lar", "Jang-goh"], step5:["De-ngiz-chi", "Jang-chi-lar", "Chan-gal-zor", "Ken-gu-ru", "Qo'-ng'i-roq", "Dong-dor-lik"], step6:["De-ngiz-chi-lik-da", "Chan-gal-zor-lik", "Ken-gay-ti-rish", "Qo'-ng'i-roq-lar", "To'-ng'-ich-lar", "Yen-gil-mas-lik"] }
+    };
+
+    // To'liq baza uchun oldingi koddan DB obyektini ko'chirib olishingiz mumkin.
+    // Men kodni ixcham saqlash uchun qisqartirdim.
+
+    let userXP = parseInt(localStorage.getItem('xoleric_xp')) || 0;
+    let progressMap = JSON.parse(localStorage.getItem('xoleric_progress')) || {};
+    let currentLetter = "", currentStep = 1, currentWordIdx = 0, currentWord = "", targetClean = "";
+    let appStarted = false;
+    let userName = "";
+
+    function initApp() {
+        const nameInput = document.getElementById('name-input');
+        if(!nameInput.value.trim()) { nameInput.focus(); return; }
+        
+        userName = nameInput.value.trim();
+        // Ismni xotiraga saqlash
+        localStorage.setItem('xoleric_username', userName);
+        
+        document.getElementById('user-display').innerText = userName.toUpperCase();
+        document.getElementById('xp-count').innerText = userXP;
+        
+        requestAccess();
+        appStarted = true;
+        
+        document.getElementById('welcome-view').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('welcome-view').style.display = 'none';
+            document.getElementById('app-shell').style.display = 'flex';
+            setTimeout(() => document.getElementById('app-shell').style.opacity = '1', 50);
+            renderHub();
+        }, 600);
+    }
+
+    function renderHub() {
+        const grid = document.getElementById('alphabet-grid');
+        grid.innerHTML = '';
+        Object.keys(DB).forEach(char => {
+            const tile = document.createElement('div');
+            tile.className = 'letter-tile glass';
+            tile.innerText = char;
+            
+            const prog = progressMap[char] || 0;
+            const bar = document.createElement('div');
+            bar.className = 'tile-progress';
+            const fill = document.createElement('div');
+            fill.className = 'tile-progress-fill';
+            fill.style.width = `${prog}%`;
+            bar.appendChild(fill);
+            tile.appendChild(bar);
+            
+            tile.onclick = () => startFocus(char);
+            grid.appendChild(tile);
+        });
+    }
+
+    function startFocus(char) {
+        currentLetter = char;
+        currentStep = 1;
+        currentWordIdx = 0;
+        document.getElementById('hub-view').classList.add('hidden');
+        document.getElementById('focus-view').style.display = 'flex';
+        loadWord();
+    }
+
+    function closeFocus() {
+        document.getElementById('focus-view').style.display = 'none';
+        document.getElementById('hub-view').classList.remove('hidden');
+        renderHub();
+    }
+
+    function loadWord() {
+        // Xato bo'lmasligi uchun tekshiruv
+        if (!DB[currentLetter] || !DB[currentLetter][`step${currentStep}`]) {
+            closeFocus();
+            return;
+        }
+
+        const list = DB[currentLetter][`step${currentStep}`];
+        currentWord = list[currentWordIdx];
+        targetClean = currentWord.replace(/[-']/g, '').toLowerCase();
+        
+        document.getElementById('step-id').innerText = `${currentStep}-BOSQICH`;
+        const box = document.getElementById('word-box');
+        
+        const syls = currentWord.split('-');
+        box.innerHTML = syls.map((s, i) => `<span class="${i%2===0?'vocal':'consonant'}">${s}</span>`).join('<span class="dash">-</span>');
+        
+        const input = document.getElementById('hidden-input');
+        input.value = '';
+        document.getElementById('text-mirror').innerText = '';
+        document.getElementById('mirror-field').className = 'mirror-field';
+        document.getElementById('status-msg').style.opacity = '0';
+        document.getElementById('btn-next').classList.remove('active');
+        document.getElementById('input-cursor').style.display = 'inline-block';
+        
+        speakCurrent();
+        forceFocus();
+    }
+
+    function forceFocus() { document.getElementById('hidden-input').focus(); }
+
+    document.getElementById('hidden-input').addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        document.getElementById('text-mirror').innerText = val;
+        AudioEngine.click();
+        
+        if(val.replace(/['\s-]/g, '') === targetClean) {
+            markMatch();
+        }
+    });
+
+    document.getElementById('hidden-input').addEventListener('keydown', (e) => {
+        if(e.key === 'Enter' && document.getElementById('btn-next').classList.contains('active')) {
+            handleNext();
+        }
+    });
+
+    function markMatch() {
+        AudioEngine.success();
+        document.getElementById('mirror-field').classList.add('match');
+        document.getElementById('input-cursor').style.display = 'none';
+        document.getElementById('status-msg').style.opacity = '1';
+        document.getElementById('btn-next').classList.add('active');
+        document.getElementById('hidden-input').blur(); // Klaviaturani yopish
+        
+        userXP += 10;
+        document.getElementById('xp-count').innerText = userXP;
+        localStorage.setItem('xoleric_xp', userXP);
+        
+        const progress = Math.floor((( (currentStep-1)*6 + (currentWordIdx+1) ) / 36) * 100);
+        progressMap[currentLetter] = Math.max(progressMap[currentLetter] || 0, progress);
+        localStorage.setItem('xoleric_progress', JSON.stringify(progressMap));
+    }
+
+    function handleNext() {
+        currentWordIdx++;
+        if(currentWordIdx >= 6) {
+            currentWordIdx = 0;
+            currentStep++;
+        }
+        
+        if(currentStep > 6 || !DB[currentLetter][`step${currentStep}`]) {
+            closeFocus();
+        } else {
+            loadWord();
+        }
+    }
+
+    function speakCurrent() {
+        const text = currentWord.replace(/-/g, '');
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'uz-UZ';
+        utterance.rate = 0.8;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // --- GUARD & SECURITY ---
+    let taps = 0, lastTap = 0;
+    window.addEventListener('touchstart', (e) => {
+        if(!appStarted || e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+        const now = Date.now();
+        if(now - lastTap < 400) taps++; else taps = 1;
+        lastTap = now;
+        if(taps >= 6) { exitSystem(); taps = 0; }
+    });
+
+    function requestAccess() {
+        const doc = document.documentElement;
+        if(doc.requestFullscreen) doc.requestFullscreen().catch(()=>{});
+        else if(doc.webkitRequestFullscreen) doc.webkitRequestFullscreen().catch(()=>{});
+        document.getElementById('guard-overlay').style.display = 'none';
+        AudioEngine.click();
+    }
+
+    function exitSystem() {
+        appStarted = false;
+        if(document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+        alert("XOLƎRIƆ seansi yakunlandi.");
+        location.reload();
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+        if(appStarted && !document.fullscreenElement && !document.webkitIsFullScreen) {
+            document.getElementById('guard-overlay').style.display = 'flex';
+        }
+    });
+</script>
+</body>
+</html>
