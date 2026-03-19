@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>XOLERIC</title>
+    
+    <meta name="theme-color" content="#0b0b0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="manifest" href="data:application/manifest+json,{
+        &quot;name&quot;: &quot;XOLERIC Mega&quot;,
+        &quot;short_name&quot;: &quot;XOLERIC&quot;,
+        &quot;start_url&quot;: &quot;.&quot;,
+        &quot;display&quot;: &quot;fullscreen&quot;,
+        &quot;background_color&quot;: &quot;#0b0b0f&quot;,
+        &quot;theme_color&quot;: &quot;#0b0b0f&quot;,
+        &quot;icons&quot;: [{
+            &quot;src&quot;: &quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230b0b0f'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%234f46e5' font-family='Arial' font-weight='bold'%3EX%3C/text%3E%3C/svg%3E&quot;,
+            &quot;sizes&quot;: &quot;192x192 512x512&quot;,
+            &quot;type&quot;: &quot;image/svg+xml&quot;
+        }]
+    }">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #0b0b0f;
+            --surface: rgba(20, 20, 30, 0.6);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #4f46e5;
+            --accent-glow: rgba(79, 70, 229, 0.4);
+            --text: #f0f0f5;
+            --text-dim: #8f8fa3;
+            --gold: #fbbf24;
+            --success: #10b981;
+            --radius-card: 32px;
+            --radius-pill: 60px;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100dvh;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border);
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes successPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* SCREENS */
+        .screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            transition: opacity 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #welcomeScreen {
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: radial-gradient(circle at 70% 30%, #1e1b3a, var(--bg));
+        }
+        #welcomeScreen.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 380px;
+            padding: 40px 30px;
+            border-radius: var(--radius-card);
+            text-align: center;
+            animation: fadeInScale 0.6s ease;
+        }
+        .logo-big {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+        .logo-small {
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 40px;
+        }
+        .input-glass {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 18px;
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 24px;
+            transition: 0.3s;
+        }
+        .input-glass:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            border-radius: 20px;
+            padding: 18px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 20px var(--accent-glow);
+        }
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 18px;
+            font-weight: 600;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+        .btn-outline:active {
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* MAIN SHELL */
+        #mainScreen {
+            opacity: 0;
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        #mainScreen.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* HEADER */
+        .app-header {
+            padding: env(safe-area-inset-top, 20px) 24px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(11,11,15,0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+        .header-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .user-badge {
+            background: var(--surface);
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+        .xp-chip {
+            background: var(--gold);
+            color: #1e1b2b;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .streak-chip {
+            background: linear-gradient(135deg, #f97316, #facc15);
+            color: #1e1b2b;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* BOTTOM NAVIGATION */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 24px;
+            background: rgba(11,11,15,0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav-item.active {
+            color: var(--accent);
+        }
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        /* HUB VIEW (main content area) */
+        #hubView {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: block;
+        }
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 16px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 20px;
+        }
+        .hub-tile {
+            aspect-ratio: 1;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            position: relative;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            padding: 8px;
+        }
+        .hub-tile.small {
+            font-size: 1rem;
+        }
+        .hub-tile:active {
+            transform: scale(0.94);
+        }
+        .tile-progress {
+            position: absolute;
+            bottom: 12px;
+            width: 50px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .tile-progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.4s;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            color: var(--text-dim);
+        }
+
+        /* ACHIEVEMENTS VIEW */
+        #achievementsView {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: none;
+        }
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+            padding-bottom: 20px;
+        }
+        .achievement-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 20px 12px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+        }
+        .achievement-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+        .achievement-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .achievement-desc {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .achievement-progress {
+            margin-top: 12px;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .achievement-progress-fill {
+            height: 100%;
+            background: var(--gold);
+            width: 0%;
+        }
+
+        /* STATS VIEW */
+        #statsView {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: none;
+        }
+        .stats-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(8px);
+        }
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .stats-label {
+            color: var(--text-dim);
+        }
+        .stats-value {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* FOCUS VIEW (same as before) */
+        #focusView {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            background: var(--bg);
+        }
+        .focus-nav {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nav-back {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .step-badge {
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .mode-tabs {
+            display: flex;
+            gap: 8px;
+            background: var(--surface);
+            border-radius: 40px;
+            padding: 4px;
+            border: 1px solid var(--border);
+        }
+        .mode-tab {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .mode-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* PRACTICE MODE */
+        .practice-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 24px;
+        }
+        .word-display {
+            font-size: clamp(3.5rem, 15vw, 6rem);
+            font-weight: 800;
+            margin-bottom: 40px;
+            text-align: center;
+            line-height: 1.2;
+            letter-spacing: 4px;
+        }
+        .word-display span.vocal { color: var(--text); }
+        .word-display span.consonant { color: var(--accent); }
+        .word-display span.dash { opacity: 0.2; padding: 0 4px; }
+        
+        .input-area {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+        .mirror-field {
+            min-height: 100px;
+            border-radius: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: 6px;
+            border: 2px solid var(--border);
+            background: rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+        .mirror-field.match {
+            border-color: var(--success);
+            color: var(--success);
+            text-shadow: 0 0 20px rgba(16,185,129,0.3);
+            animation: successPop 0.4s ease;
+        }
+        .cursor {
+            display: inline-block;
+            width: 4px;
+            height: 3rem;
+            background: var(--accent);
+            margin-left: 8px;
+            animation: blink 1s infinite;
+            border-radius: 4px;
+        }
+        #hiddenInput {
+            position: absolute;
+            top: -50px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .status-message {
+            margin-top: 24px;
+            font-weight: 700;
+            color: var(--success);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .next-btn {
+            margin: 24px;
+            padding: 18px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-align: center;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            opacity: 0.2;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+        .next-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+            cursor: pointer;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+
+        /* CATALOG MODE */
+        .catalog-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .step-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+        }
+        .step-arrow {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .catalog-grid {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            padding: 0 24px 24px;
+        }
+        .word-tile {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 16px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(8px);
+        }
+        .word-tile:active {
+            transform: scale(0.96);
+            background: var(--accent);
+            color: white;
+        }
+
+        /* DAILY CHALLENGE TILE */
+        .daily-tile {
+            background: linear-gradient(145deg, #2a2a5a, #1a1a3a);
+            border: 2px solid var(--gold);
+            margin-bottom: 20px;
+        }
+
+        /* GUARD OVERLAY */
+        #guardOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(40px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .hide { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="guardOverlay">
+        <div style="font-size: 5rem; margin-bottom: 20px;">🔒</div>
+        <h2 style="font-size: 2rem; margin-bottom: 12px;">XOLERIC Qulflangan</h2>
+        <p style="color: var(--text-dim); margin-bottom: 40px;">To'liq ekran rejimi talab qilinadi.</p>
+        <button class="btn-primary" style="padding: 18px 40px;" onclick="requestFullAccess()">DAVOM ETISH</button>
+    </div>
+
+    <!-- WELCOME SCREEN -->
+    <div id="welcomeScreen" class="screen">
+        <div class="login-card glass">
+            <div class="logo-big">XOLERIC</div>
+            <div class="logo-small">📚</div>
+            <input type="text" id="userNameInput" class="input-glass" placeholder="Ismingiz" autocomplete="off">
+            <div class="btn-group">
+                <button class="btn-primary" id="startBtn">KIRISH</button>
+                <button class="btn-outline" id="continueLastBtn">OXIRGI JARAYON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainScreen" class="screen">
+        <header class="app-header">
+            <div class="header-left">
+                <span id="userNameDisplay" class="user-badge">Mehman</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="streak-chip" id="streakDisplay">
+                    <span>🔥</span><span id="streakCount">0</span>
+                </div>
+                <div class="xp-chip">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <span id="xpDisplay">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA (changes based on nav) -->
+        <div id="hubView">
+            <!-- Daily Challenge Tile -->
+            <div class="hub-tile daily-tile" id="dailyChallengeTile" style="aspect-ratio: auto; padding: 20px; margin-bottom: 20px;">
+                <div style="font-size: 1.2rem; font-weight: 800; margin-bottom: 8px;">🌟 KUNLIK CHALLENGE</div>
+                <div style="font-size: 0.9rem; color: var(--gold); margin-bottom: 12px;">Qo'shimcha 50 XP</div>
+                <div id="dailyWordPreview" style="font-size: 1.5rem; font-weight: 700;">A-ka</div>
+            </div>
+
+            <div class="section-title">📚 HARFLAR</div>
+            <div class="hub-grid" id="letterGrid"></div>
+
+            <div class="section-title">🗂️ KATEGORIYALAR</div>
+            <div class="hub-grid" id="categoryGrid"></div>
+
+            <div class="section-title">🌍 GLOBAL BOSQICHLAR</div>
+            <div class="hub-grid" id="globalGrid">
+                <div class="hub-tile glass" onclick="startGlobalMode()" style="background: linear-gradient(145deg, #2a2a3a, #1a1a2a);">
+                    <span style="font-size: 2rem;">🌍</span>
+                    <span style="font-size: 1rem; margin-top: 8px;">6 bosqich</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="achievementsView">
+            <div class="achievements-grid" id="achievementsGrid"></div>
+        </div>
+
+        <div id="statsView">
+            <div class="stats-card">
+                <div class="stats-row"><span class="stats-label">Umumiy XP</span><span class="stats-value" id="statTotalXP">0</span></div>
+                <div class="stats-row"><span class="stats-label">Kunlik streak</span><span class="stats-value" id="statStreak">0</span></div>
+                <div class="stats-row"><span class="stats-label">Oʻtilgan soʻzlar</span><span class="stats-value" id="statWordsLearned">0</span></div>
+                <div class="stats-row"><span class="stats-label">Tugallangan harflar</span><span class="stats-value" id="statLettersDone">0</span></div>
+            </div>
+        </div>
+
+        <!-- FOCUS VIEW (same) -->
+        <div id="focusView">
+            <div class="focus-nav">
+                <button class="nav-back" id="backBtn">← CHIQISH</button>
+                <div class="step-badge" id="stepLabel">1-BOSQICH</div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="nav-back" id="speakBtn">🔊</button>
+                    <div class="mode-tabs" id="focusModeTabs">
+                        <span class="mode-tab active" data-focusmode="practice">Amaliy</span>
+                        <span class="mode-tab" data-focusmode="catalog">Roʻyxat</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRACTICE MODE CONTENT -->
+            <div id="practiceMode" style="display: flex; flex: 1; flex-direction: column;">
+                <div class="practice-content" onclick="focusInput()">
+                    <div class="word-display" id="wordBox"></div>
+                    <div class="input-area">
+                        <div class="mirror-field" id="mirrorField">
+                            <span id="textMirror"></span><span class="cursor" id="cursor"></span>
+                        </div>
+                    </div>
+                    <div class="status-message" id="statusMsg">✅ TO'G'RI! +10 XP</div>
+                </div>
+                <input type="text" id="hiddenInput" autocomplete="off" spellcheck="false">
+                <button class="next-btn" id="nextBtn" onclick="handleNext()">KEYINGI →</button>
+            </div>
+
+            <!-- CATALOG MODE CONTENT -->
+            <div id="catalogMode" style="display: none; flex: 1; flex-direction: column;">
+                <div class="catalog-content">
+                    <div class="step-nav">
+                        <button class="step-arrow" id="prevStepBtn">← Oldingi</button>
+                        <span id="catalogStepLabel">1-bosqich (0 ta soʻz)</span>
+                        <button class="step-arrow" id="nextStepBtn">Keyingi →</button>
+                    </div>
+                    <div class="catalog-grid" id="catalogGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <div class="bottom-nav">
+            <div class="nav-item active" data-nav="hub">
+                <span class="nav-icon">🏠</span>
+                <span>Bosh</span>
+            </div>
+            <div class="nav-item" data-nav="achievements">
+                <span class="nav-icon">🏆</span>
+                <span>Yutuqlar</span>
+            </div>
+            <div class="nav-item" data-nav="stats">
+                <span class="nav-icon">📊</span>
+                <span>Statistika</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== MEGA DATABASE ====================
+        // 1. Original letter DB (unchanged)
+        const DB = {
+            "A":{ step1:["A-ka", "A-or", "A-ra", "A-na", "A-to", "A-yiq"], step2:["A-nor", "A-lo-qa", "A-ra-va", "A-za-mat", "A-lif-bo", "A-dras"], step3:["Av-to-mo-bil", "A-ra-la-shuv", "A-sos-la-moq", "A-niq-la-ma", "Ax-bo-rot", "A-yov-siz"], step4:["A-ka-de-mi-ya", "A-vi-a-tsi-ya", "A-gro-nom", "A-do-lat-li", "A-dras-mon", "A-ziz-lik"], step5:["A-sos-chi-lar", "A-yov-siz-lik", "An-a-na-viy", "A-ha-mi-yat", "A-niq-lik-lar", "Ak-tyor-lar"], step6:["A-vi-a-tsi-ya-chi", "A-ka-de-mik-lar", "A-sos-lan-ma-gan", "A-ha-mi-yat-siz", "A-ra-lash-ti-rish", "A-chi-nar-li-roq"] },
+            "B":{ step1:["Bo-la", "Bo-bo", "Bu-vi", "Bo-g'i", "Be-da", "Ba-ho"], step2:["Ba-liq", "Bi-lim", "Ba-ho-dir", "Be-mor", "Ba-ra-ka", "Bay-ram"], step3:["Bosh-lan-g'ich", "Bi-la-gu-zuk", "Ba-qa-te-rak", "Buz-g'un-chi", "Boy-la-moq", "Be-g'u-bor"], step4:["Ba-ra-ka-li", "Bi-lim-don", "Be-min-nat", "Ba-ho-la-moq", "Bu-loq-lar", "Be-va-fo"], step5:["Bi-lim-don-lik", "Ba-qa-te-rak-lar", "Bo-yo-vut-lik", "Be-to-qat-lik", "Bosh-lan-ma-gan", "Buy-ruq-boz"], step6:["Bi-la-gu-zuk-siz", "Buz-g'un-chi-lik", "Ba-ho-dir-lik-lar", "Bosh-bo-shiq-lik", "Be-pa-ro-sat-lik", "Bay-ram-o-na"] },
+            "D":{ step1:["Da-da", "Da-la", "Do-ri", "Da-vo", "Do-hiy", "Do-ira"], step2:["Daf-tar", "Dav-lat", "Da-raxt", "Dun-yo", "Deh-qon", "Da-ro-mad"], step3:["Dav-lat-shoh", "Do-vyu-rak", "Das-tur-xon", "Dil-kash-lik", "Dast-goh", "Da-vo-la"], step4:["Da-vo-la-nish", "Dun-yo-qar-ash", "Deh-qon-chi", "Daf-tar-cha", "Da-ro-mad-li", "Do-vyu-rak-lar"], step5:["Dav-lat-lar-a-ro", "Da-ro-mad-siz", "Das-tur-xon-chi", "Dun-yo-viy-lik", "Deh-qon-bo-zor", "Do-i-ra-siz"], step6:["Dav-lat-shu-nos-lik", "Do-vyu-rak-lar-cha", "Da-ro-mad-siz-lik", "Das-tur-xon-chi-lik", "Dil-kash-lik-lar-dan", "Deh-qon-chi-lik-siz"] },
+            "E":{ step1:["E-ga", "E-lak", "E-shik", "Er-tak", "E-kin", "E-lat"], step2:["E-tik", "E-lon", "E-li-miz", "E-ti-bor", "E-ga-si", "E-ski"], step3:["E-lak-chi", "E-kin-zor", "E-rin-choq", "E-ti-qod", "E-zoz-lash", "E-shi-tish"], step4:["E-lon-no-ma", "E-ti-bor-li", "E-zgul-lik", "E-ti-roz-lar", "E-ko-lo-gi-ya", "E-kin-zor-lar"], step5:["E-rin-choq-lik", "E-ti-bor-siz", "E-ti-qod-li", "E-zoz-la-moq", "E-lek-tro-ni-ka", "E-lon-lar-dan"], step6:["E-ti-bor-siz-lik", "E-rin-choq-lar-cha", "E-ti-qod-siz-lik", "E-lek-tro-tex-ni-ka", "E-ko-lo-gi-ya-viy", "E-zoz-lan-ma-gan"] },
+            "F":{ step1:["Fa-zo", "Fi-do", "Fo-iz", "Fa-ol", "Fer-ma", "Fa-qir"], step2:["Fan-lar", "Fo-nar", "Fax-riy", "Fik-rim", "Fer-mer", "Fa-raz"], step3:["Fa-o-li-yat", "Faxr-la-nish", "Fi-do-kor", "Fan-tex-ni-ka", "Farq-la-moq", "Fikr-lash-moq"], step4:["Fa-zi-lat-li", "Far-zand-lar", "Fa-lo-kat-li", "Fa-o-li-yat-da", "Fikr-lash-ish", "Foy-da-lan-ish"], step5:["Fa-o-li-yat-siz", "Faxr-la-nar-li", "Fi-do-kor-lik", "Foy-da-lan-uv-chi", "Fa-las-tin-lik", "Far-zand-siz-lik"], step6:["Fa-o-li-yat-siz-lik", "Fi-do-kor-o-na", "Foy-da-la-nil-ma-gan", "Fa-zi-lat-lar-i-miz", "Farq-lan-ma-gan-lik", "Fikr-la-sha-o-lish"] },
+            "G":{ step1:["Gu-li", "Gav-da", "Gi-lam", "Ga-do", "Gu-ruh", "Ga-pi"], step2:["Gul-don", "Gul-xan", "Gul-chi", "Ga-ram", "Gar-mon", "Gu-voh"], step3:["Gu-lis-ton", "Gul-par-var", "Gul-xan-chi", "Gi-lam-doz", "Gar-dish-li", "Ga-pi-rish"], step4:["Gu-lis-ton-lik", "Gu-voh-no-ma", "Go'-zal-lik", "Gu-rul-lash", "Ga-zak-li", "Gu-noh-kor"], step5:["Go'-zal-lik-lar", "Gu-voh-no-ma-si", "Gul-par-var-lik", "Ga-pi-ril-ma-gan", "Gi-lam-doz-lik", "Gu-noh-kor-lar"], step6:["Go'-zal-lash-ti-rish", "Gu-lis-ton-lik-lar", "Gu-voh-no-ma-siz", "Gul-par-var-lar-cha", "Ga-pi-ri-la-yo-tgan", "Gi-lam-doz-lik-da"] },
+            "H":{ step1:["Ha-vo", "Ha-yo", "Hi-dla", "Ha-sad", "Hur-mat", "Ha-li"], step2:["Ho-zir", "Hu-nar", "Ha-ram", "Ho-ji", "Huj-jat", "Hay-kal"], step3:["Ha-qi-qat", "Hu-nar-mand", "Ho-zir-gi", "Ha-ram-xo-na", "Huj-jat-xo-na", "Ho-zir-ja-vob"], step4:["Ha-qi-qiy", "Hu-nar-siz", "Hay-kal-ta-rosh", "Ha-ra-kat-da", "Ha-ya-jon-li", "Hur-mat-siz"], step5:["Ha-qi-qat-dan", "Hu-nar-mand-lik", "Ha-ra-kat-chan", "Hay-kal-ta-rosh-lik", "Ha-ya-jon-la-nish", "Ho-zir-ja-vob-lik"], step6:["Ha-qi-qat-par-var", "Ha-ra-kat-chan-lik", "Hur-mat-siz-lik-lar", "Hay-kal-ta-rosh-lik-da", "Ha-ya-jon-lan-ma-gan", "Hu-nar-mand-chi-lik"] },
+            "I":{ step1:["I-lon", "I-pak", "I-rim", "Ik-ki", "I-liq", "I-shing"], step2:["I-shonch", "I-lo-va", "I-bo-ra", "Ilm-li", "I-job", "I-jod"], step3:["I-lo-va-lar", "I-shonch-li", "I-bo-ra-lar", "I-jod-kor", "Il-miy-lik", "I-jo-bat"], step4:["I-shonch-siz", "I-jod-kor-lar", "I-bro-him", "I-bo-ra-siz", "I-chim-lik", "Iq-ti-sod"], step5:["I-shonch-siz-lik", "I-jod-kor-lik", "I-chim-lik-lar", "Iq-ti-sod-chi", "I-lo-va-lar-dan", "Ilm-siz-lik"], step6:["Iq-ti-so-di-yot", "I-jod-kor-lik-da", "I-shonch-siz-lik-dan", "Iq-ti-dor-li-lar", "Ish-bi-lar-mon-lik", "Is-te-mol-chi-lik"] },
+            "J":{ step1:["Ju-da", "Jo'-ja", "Ja-zo", "Jiy-da", "Ja-sur", "Jo-nim"], step2:["Ja-vob", "Jo'-nat", "Jahl-dor", "Joy-la", "Ja-hon", "Juft-lik"], step3:["Ja-hon-gir", "Joy-la-shuv", "Ja-za-va", "Ja-vob-gar", "Ja-sur-lik", "Jin-ni-lik"], step4:["Ja-vob-siz", "Ja-hal-dor", "Ja-fo-kash", "Jon-ku-yar", "Ja-mi-yat", "Ji-no-yat"], step5:["Ja-vob-gar-lik", "Ja-fo-kash-lik", "Ji-no-yat-kor", "Jon-ku-yar-lik", "Ja-mi-yat-da", "Ja-sur-lik-lar"], step6:["Ji-no-yat-kor-lik", "Ja-vob-gar-siz-lik", "Ja-mi-yat-shu-nos", "Jon-ku-yar-lik-dan", "Ja-za-va-la-nish", "Jis-mo-niy-lik"] },
+            "K":{ step1:["Ka-bi", "Ku-ni", "Ke-cha", "Ko'-rpa", "Ku-rak", "Ki-shi"], step2:["Ki-tob", "Kar-rak", "Ko-mil", "Ki-yim", "Ka-lom", "Kasb-kor"], step3:["Ki-tob-xon", "Ko-mil-lik", "Ka-lam-don", "Ke-la-jak", "Ka-la-ka", "Ku-za-tish"], step4:["Ki-tob-xo-na", "Ki-yim-ke-chak", "Ko-i-not", "Ku-za-tuv-chi", "Ka-fo-lat", "Ko'-rsat-ma"], step5:["Ki-tob-xon-lik", "Ka-fo-lat-li", "Ko'-rsat-ma-li", "Ke-la-jak-da-gi", "Kam-ta-rin", "Ko'p-chi-lik"], step6:["Ki-tob-xo-na-chi", "Kam-ta-rin-lik-lar", "Ko'-rsat-kich-lar", "Ka-fo-lat-siz-lik", "Ku-za-tuv-chi-lik", "Ko'p-chi-lik-ning"] },
+            "L":{ step1:["Lo-la", "La-gan", "Lu-g'at", "La-qab", "Loy-qa", "Li-kash"], step2:["Li-mon", "La-ziz", "Li-bos", "Lo-chin", "Lay-lak", "Laz-zat"], step3:["Lo-yi-ha", "Li-mon-zor", "Lo-la-zor", "Li-bos-lar", "Laz-zat-li", "La-to-fat"], step4:["Lo-yi-ha-chi", "La-bo-rant", "Lu-g'at-lar", "La-yo-qat", "La-to-fat-li", "Lay-lak-lar"], step5:["La-bo-ra-to-ri-ya", "La-yo-qat-siz", "Lu-g'at-shu-nos", "Lo-yi-ha-kash", "Laz-zat-la-nish", "Li-bo-si-miz"], step6:["Lo-yi-ha-lash-ti-rish", "La-yo-qat-siz-lik", "Lu-g'at-shu-nos-lik", "La-bo-ra-to-ri-ya-da", "Laz-zat-lan-mas-lik", "La-to-fat-li-roq"] },
+            "M":{ step1:["Mo-mo", "Ma-qol", "Ma-no", "Me-va", "Ma-na", "Mo-sh"], step2:["Mak-tab", "Man-ba", "Mo-hir", "Mi-joz", "Mas-jid", "Ma-qom"], step3:["Ma-shi-na", "Mi-sol-lar", "Mo-hir-lik", "Mod-diy-lik", "Mu-al-lim", "Ma-sa-la"], step4:["Ma-shi-na-soz", "Mas-ul-li", "Mus-ta-qil", "Mi-joz-lar", "Ma-sal-liq", "Mav-zu-lar"], step5:["Mas-u-li-yat", "Mus-ta-qil-lik", "Ma-shi-na-lar", "Mu-al-lim-lik", "Mam-la-kat", "Man-fa-at-li"], step6:["Mas-u-li-yat-siz", "Mus-ta-qil-lik-da", "Ma-shi-na-soz-lik", "Mam-la-ka-ti-miz", "Man-fa-at-dor-lik", "Mu-vaf-fa-qi-yat"] },
+            "N":{ step1:["No-mi", "Ni-yat", "No-ta", "Na-vo", "Ne-ga", "Na-qd"], step2:["Na-fas", "Ne-mat", "Nav-bat", "No-rin", "Ni-shon", "No-don"], step3:["Na-fa-qa", "Ni-zom-li", "Na-mu-na", "Na-ti-ja", "Ni-ho-yat", "No-haq-lik"], step4:["Ni-zom-no-ma", "No-don-lik", "Nav-bat-chi", "Ni-shon-la-moq", "Na-mu-na-li", "Na-ti-ja-li"], step5:["Na-fa-qa-xo'r", "No-don-lik-lar", "No-ma-lum-lik", "Na-ti-ja-siz", "Nuq-son-siz-lik", "No-haq-lik-lar"], step6:["Na-ti-ja-dor-lik", "No-ma-lum-lik-dan", "Na-mu-na-viy-lik", "Nav-bat-chi-lik-da", "Ni-zom-no-ma-siz", "No-mu-ta-no-sib"] },
+            "O":{ step1:["O-ta", "O-na", "O-yoq", "O-lov", "O-xir", "O-g'iz"], step2:["O-voz", "Ol-ma", "O-chiq", "O-qil", "O-dam", "O-qim"], step3:["O-na-si", "O-lim-lar", "O-vo-za", "O-dam-zod", "O-son-lik", "O-qil-lik"], step4:["O-na-ti-li", "O-chiq-lik", "O-qil-o-na", "O-zo-da", "O-mo-nat", "O-la-mon"], step5:["O-lim-pi-ya", "O-mo-nat-dor", "O-chiq-oy-din", "O-zo-da-lik", "O-la-mon-chi", "O-dam-gar-chi-lik"], step6:["O-chiq-ko'n-gil", "O-dam-gar-chi-lik-siz", "O-mo-nat-dor-lik", "O-lim-pi-a-da", "O-chiq-oy-din-lik", "O-ziq-ov-qat-lar"] },
+            "P":{ step1:["Pax-ta", "Pi-yoz", "Pa-dar", "Pul-li", "Pa-ri", "Po-k"], step2:["Pe-shin", "Pak-ka", "Pu-fak", "Poch-ta", "Pa-lov", "Po-liz"], step3:["Pul-lik", "Par-da", "Pi-shiq", "Pax-ta-kor", "Par-hez-kor", "Po-liz-chi"], step4:["Poch-ta-xo-na", "Par-doz-chi", "Pa-lov-xo'r", "Pa-la-rit", "Paj-mur-da", "Poy-ab-zal"], step5:["Pax-ta-kor-lik", "Par-doz-chi-lik", "Pay-poq-fu-rush", "Poy-tax-ti-miz", "Pur-ma-no-lik", "Past-kash-lik"], step6:["Par-hez-kor-lik-lar", "Poy-ab-zal-do'-zi", "Past-kash-lik-la-ri", "Pe-sha-na-do'-zi", "Pax-ta-te-rish-da", "Pur-vi-qor-lik-lar"] },
+            "Q":{ step1:["Qa-ri", "Qul-fi", "Qo-zi", "Qon-li", "Qa-d", "Qum-li"], step2:["Qa-mish", "Qa-tiq", "Qu-yon", "Qa-lam", "Qo-zon", "Qa-ror"], step3:["Qat-tiq", "Qu-yosh", "Qo-lip", "Qo-zon-cha", "Qu-yosh-li", "Qa-ror-goh"], step4:["Qa-lam-kash", "Qo-lip-la-moq", "Qulf-la-moq", "Qo'-shim-cha", "Qo-nu-niy", "Qi-zi-qar"], step5:["Qo-nun-chi-lik", "Qo'-shim-cha-lar", "Qa-lam-tas-vir", "Qad-ri-yat", "Qa-ror-goh-da", "Qo-ni-qar-li"], step6:["Qad-ri-yat-lar-dan", "Qo-nun-bu-zar-lik", "Qa-no-at-la-nish", "Qo-ni-qar-siz-lik", "Qo'-shim-cha-siz", "Qa-lam-tas-vir-da"] },
+            "R":{ step1:["Ro-zi", "Ra-is", "Ros-ti", "Ra-ng", "Ruf-ti", "Ri-m"], step2:["Ra-qam", "Ro-bot", "Ras-som", "Rish-ta", "Ray-hon", "Ruch-ka"], step3:["Ra-fiq", "Ri-voj", "Ri-so-la", "Ra-qam-li", "Ro-hat-lan", "Ras-miy"], step4:["Ras-som-chi", "Ri-so-la-chi", "Ro-bot-tex", "Rish-ta-lar", "Rav-naq-li", "Ras-mi-yat"], step5:["Ri-voj-la-nish", "Ras-mi-yat-chi", "Ro-hat-lan-moq", "Ras-som-chi-lik", "Ra-qam-la-shish", "Rah-bar-lik"], step6:["Ri-voj-lan-ti-rish", "Ras-mi-yat-chi-lik", "Ra-qam-lash-ti-rish", "Rah-bar-siz-lik-lar", "Res-pub-li-ka", "Ru-hi-yat-shu-nos"] },
+            "S":{ step1:["Sa-har", "So-ya", "Su-v", "Si-r", "So-f", "Sa-n"], step2:["Sa-vat", "Sa-riq", "So-vuq", "Sa-noq", "So-at", "Su-li"], step3:["Su-vor", "Sa-lom", "Sa-voq", "Sar-son", "Sa-vat-cha", "Sez-gir"], step4:["So-at-soz", "Su-vo-riy", "Sa-voq-li", "Sez-gir-lik", "Sa-no-at", "Sa-lo-mat"], step5:["Sa-lom-lash-moq", "Sa-no-at-chi", "Sa-lo-mat-lik", "Sa-ma-ra-li", "Sar-son-gar-lik", "Sir-li-lik"], step6:["Sa-lo-mat-lik-lar", "Sa-no-at-la-shish", "Sa-ma-ra-dor-lik", "Sa-lom-la-shi-shib", "Sa-mi-mi-yat-li", "Su-ran-kash-lik-lar"] },
+            "T":{ step1:["To-la", "Tu-ya", "Ti-l", "To-g'", "Ta-n", "To-j"], step2:["To-voq", "Til-la", "To-g'a", "Tul-ki", "Ta-lim", "To-mir"], step3:["Tu-zuk", "Ta-rif", "Ti-kin", "Tu-rar", "Ta-lim-ot", "Tu-zuk-lik"], step4:["To-mir-lar", "Ta-rif-no-ma", "To-mo-sha", "Tu-rar-joy", "Ta-bi-at", "Ta-raq-qiy"], step5:["To-mo-sha-bin", "Ta-bi-at-da", "Ta-raq-qi-yot", "Ta-la-ba-lik", "Tash-ki-lot-chi", "Taj-ri-ba"], step6:["Ta-raq-qi-yot-da", "Tash-ki-lot-chi-lik", "Taj-ri-ba-siz-lik", "Ta-shab-bus-kor-lik", "To-mo-sha-bin-lar", "Ta-lim-tar-bi-ya"] },
+            "U":{ step1:["U-ka", "U-ya", "Un-li", "Uz-ra", "Uy-da", "U-l"], step2:["U-kam", "U-zun", "U-mid", "U-zum", "U-shoq", "U-rug'"], step3:["U-loq", "U-lan", "U-yat", "U-quv", "U-zum-zor", "U-rug'-chi"], step4:["U-lan-ma", "U-loq-chi", "U-yat-li", "U-mid-vor", "U-shal-mas", "U-lu-g'i"], step5:["U-mid-vor-lik", "U-quv-siz-lik", "U-yat-siz-lik", "Uy-g'o-nish-da", "U-mum-lash-ma", "Uz-luk-siz"], step6:["U-mum-lash-ti-rish", "Uz-luk-siz-lik-lar", "U-yat-siz-lik-dan", "Uy-g'un-lash-ti-rish", "U-zoq-ni-ko'-rar", "U-mid-baxsh-lik-lar"] },
+            "V":{ step1:["Va-fo", "Vo-ya", "Va-qt", "Va-k", "Va-y", "Va-h"], step2:["Va-tan", "Va-raq", "Va-kil", "Vo-diy", "Vaz-ni", "Va-li"], step3:["Vij-don", "Vi-deo", "Vil-ka", "Var-rak", "Vo-diy-lik", "Vi-lo-yat"], step4:["Vi-deo-lar", "Va-si-yat", "Va-fo-dor", "Va-hi-ma", "Va-zi-fa", "Vazn-siz-lik"], step5:["Vi-lo-yat-da", "Vij-don-siz-lik", "Va-fo-dor-lik", "Va-hi-ma-li", "Va-zi-fa-lar", "Vaq-tin-cha"], step6:["Vi-lo-yat-lar-a-ro", "Vaz-min-lik-dan", "Va-zi-fa-dor-lik", "Vaq-tin-cha-lik-lar", "Vo-qe-lik-lar-ni", "Va-tan-par-var-lik"] },
+            "X":{ step1:["Xa-to", "Xo-la", "Xa-fa", "Xo-s", "Xi-l", "Xo-r"], step2:["Xat-lar", "Xu-mi", "Xa-rit", "Xal-qim", "Xo-na", "Xur-mo"], step3:["Xa-rid", "Xa-bar", "Xir-mon", "Xa-ri-dor", "Xur-mo-zor", "Xal-qa-ro"], step4:["Xo-na-don", "Xa-bar-dor", "Xir-mon-jo", "Xiz-mat-chi", "Xi-yo-nat", "Xo-ti-ra"], step5:["Xa-ri-dor-lar", "Xo-na-don-lik", "Xa-bar-siz-lik", "Xiz-mat-chi-lik", "Xo-ti-ra-li", "Xavf-siz-lik"], step6:["Xal-qa-ro-la-shuv", "Xa-bar-dor-lik-dan", "Xi-yo-nat-kor-lik", "Xo-ti-ra-siz-lik", "Xavf-siz-lik-la-ri", "Xay-ri-xoh-lik-dan"] },
+            "Y":{ step1:["Ya-ngi", "Ya-rim", "Yo'-q", "Yo-d", "Yo-z", "Yo-t"], step2:["Yu-rak", "Yil-gi", "Yo-vuz", "Yo-qut", "Yo-zuv", "Yu-z"], step3:["Yul-g'un", "Yo'-nal", "Yuk-la", "Yax-shi", "Ya-qin", "Yo-zuv-chi"], step4:["Yuk-la-moq", "Ya-rim-ta", "Yoz-gi-cha", "Yu-qo-ri", "Ya-ra-tish", "Yu-ruv-chi"], step5:["Yax-shi-lik-lar", "Ya-ngi-lik-lar", "Yurt-dosh-lar", "Yo'-na-lish-li", "Yu-qum-li-lik", "Ya-ra-tuv-chi"], step6:["Yo'-nal-ti-ril-gan", "Ya-qin-lash-ti-rish", "Ya-ra-tuv-chan-lik", "Ye-tish-mov-chi-lik", "Yu-qo-ri-da-gi", "Yax-shi-lik-lar-dan"] },
+            "Z":{ step1:["Zi-na", "Za-ki", "Zo'-r", "Ze-b", "Zi-r", "Zu-v"], step2:["Zar-ba", "Zi-rak", "Za-far", "Za-rar", "Za-min", "Za-mon"], step3:["Zo-g'or", "Zo-na", "Zu-luk", "Zan-jir", "Za-mon-lar", "Zulm-kor"], step4:["Za-min-dor", "Za-rar-li", "Zo-riq-moq", "Zu-luk-lar", "Zi-yo-rak", "Zi-yo-fat"], step5:["Za-mo-na-viy", "Zi-yo-fat-li", "Zar-ba-dor-lar", "Zul-mat-li", "Zi-yo-rat-goh", "Za-far-li-lik"], step6:["Za-mo-na-viy-lik", "Zi-yo-li-lar-dan", "Za-ru-ri-yat-lar", "Za-rur-siz-lik-lar", "Zi-yo-rat-goh-lar", "Za-bar-dast-lik-lar"] },
+            "O'":{ step1:["O'-zi", "O'-y", "O'-q", "O'-t", "O'-n", "O'-ch"], step2:["O'-rik", "O'-rtoq", "O'-rdak", "O'-tish", "O'-yin", "O'-g'il"], step3:["O'-choq", "O'-rni", "O'-lim", "O'-zak", "O'-sim", "O'-rik-zor"], step4:["O'-g'il-cha", "O'-zak-li", "O'-yin-chi", "O'-rga-tish", "O'-tkir", "O'-qi-tuv"], step5:["O'-lim-la-ri", "O'-choq-chi", "O'-rtog'-im", "O'-qi-tuv-chi", "O'-quv-chi-lar", "O'-zga-rish"], step6:["O'-qi-tuv-chi-lik", "O'-zlash-ti-rish", "O'-yin-qad-roq", "O'-xshash-siz-lik", "O'-sim-lik-lar-ni", "O'-zga-ruv-chan"] },
+            "G'":{ step1:["G'-or", "G'-am", "G'-oz", "G'-isht", "G'-il", "G'-ash"], step2:["G'o'-za", "G'i-lof", "G'o-lib", "G'o-ya", "G'i-rom", "G'a-zab"], step3:["G'al-la", "G'o-yib", "G'u-rur", "G'am-xo'r", "G'il-dir", "G'oy-o-na"], step4:["G'o-zal-lik", "G'al-la-kor", "G'u-rur-li", "G'il-di-rak", "G'a-zab-li", "G'o-yo-na"], step5:["G'am-xo'r-lik", "G'al-la-don", "G'il-ja-yish", "G'a-nim-lik", "G'u-bor-siz", "G'a-la-yon"], step6:["G'am-xo'r-lik-lar", "G'al-la-kor-lik", "G'a-zab-la-nish", "G'ir-rom-lik-lar", "G'o-ya-viy-lik", "G'ay-rat-li-lik"] },
+            "Sh":{ step1:["Shu", "Sha-r", "Sho-h", "She-r", "Shi-r", "Sha-n"], step2:["Sha-har", "Shu-mi", "Sha-mo", "Shi-pa", "Sha-mol", "Shod-lik"], step3:["Shod-li", "Shi-rin", "Shu-kuh", "Sha-raf", "Shu-ur", "Shu-kr"], step4:["Sha-raf-li", "Sha-har-lar", "Shu-kuh-li", "Sha-mol-lar", "Shod-lik-lar", "Shu-kr-li"], step5:["Sha-har-li-lar", "Shi-fo-kor-lar", "Sho-shi-linch", "Sha-faq-li", "Sha-rob-xo-na", "Shi-ko-yat"], step6:["Shi-fo-kor-lik-da", "Sho-shi-linch-lik", "Shaf-qat-siz-lik", "Sha-raf-la-nish", "Shi-ko-yat-no-ma", "Sha-kar-ob-li-lik"] },
+            "Ch":{ step1:["Cho'-l", "Cho-y", "Cho-p", "Cha-q", "Che-k", "Chi-z"], step2:["Cha-qa", "Chu-qur", "Che-lak", "Chi-roq", "Chay-la", "Cho-pon"], step3:["Choy-nak", "Chuch-va", "Cha-na", "Cha-qir", "Cho'-ntak", "Cho'-loq"], step4:["Chay-la-chi", "Chu-qur-lik", "Cha-qir-moq", "Choy-nak-lar", "Chi-roq-chi", "Cha-man-zor"], step5:["Cho-pon-la-ri", "Cha-qi-ruv-chi", "Che-ga-ra-siz", "Chaq-qon-lik", "Chi-dam-li-lik", "Chor-va-dor-lar"], step6:["Che-ga-ra-chi-lik", "Chor-va-dor-lik-da", "Cha-qi-ril-ma-gan", "Chi-dam-siz-lik-lar", "Chul-g'ab-o-lish-di", "Chaq-moq-tosh-lar"] },
+            "Ng":{ step1:["To-ng", "So-ng", "Bo-ng", "Mi-ng", "Te-ng", "Ke-ng"], step2:["Ta-nga", "Ma-ngu", "Ya-ngi", "To-ngi", "Mi-ngi", "De-ngiz"], step3:["Sha-ng'i", "Si-ngil", "Jang-chi", "Ba-ngi", "Che-ngal", "Be-ngal"], step4:["Ta-nga-lar", "Man-gu-lik", "Tong-gi-lar", "Sin-gil-lar", "Keng-lik-lar", "Jang-goh"], step5:["De-ngiz-chi", "Jang-chi-lar", "Chan-gal-zor", "Ken-gu-ru", "Qo'-ng'i-roq", "Dong-dor-lik"], step6:["De-ngiz-chi-lik-da", "Chan-gal-zor-lik", "Ken-gay-ti-rish", "Qo'-ng'i-roq-lar", "To'-ng'-ich-lar", "Yen-gil-mas-lik"] }
+        };
+
+        // 2. New categories DB (each category has 6 steps with 6 words)
+        const CATEGORIES = {
+            "Hayvonlar": {
+                step1: ["Ayiq", "Boʻri", "Tulki", "Quyon", "Kiyik", "Sher"],
+                step2: ["Fil", "Jirafa", "Maymun", "Yoʻlbars", "Zebra", "Karkidon"],
+                step3: ["Timsoh", "Begemot", "Nosorog", "Gorilla", "Shimpanze", "Lemur"],
+                step4: ["Delfin", "Kit", "Akula", "Sakkizoyoq", "Dengiz toshbaqasi", "Morj"],
+                step5: ["Qoplon", "Ilon", "Kaltakesak", "Buqa", "Sigir", "Qoʻy"],
+                step6: ["Tovuq", "Xoʻroz", "Oʻrdak", "Gʻoz", "Kaptar", "Burgut"]
+            },
+            "Mevalar": {
+                step1: ["Olma", "Nok", "Banan", "Apelsin", "Uzum", "Shaftoli"],
+                step2: ["Anor", "Gilos", "Olcha", "Qulupnay", "Malina", "Kivi"],
+                step3: ["Ananas", "Mango", "Papayya", "Hindiston yong'og'i", "Limon", "Greypfrut"],
+                step4: ["Xurmo", "Anjir", "Tut", "Olxoʻri", "Oʻrik", "Bodom"],
+                step5: ["Yong'oq", "Pista", "Findiq", "Kashtan", "Qarag'ay yong'og'i", "Makadamiya"],
+                step6: ["Tarvuz", "Qovun", "Qovoq", "Bodring", "Pomidor", "Baqlajon"]
+            },
+            "Kiyimlar": {
+                step1: ["Koʻylak", "Shim", "Yubka", "Kurtka", "Paypoq", "Kraska"],
+                step2: ["Futbolka", "Mayka", "Svitr", "Jemper", "Pidjak", "Palto"],
+                step3: ["Qoʻlqop", "Sharf", "Qalpoq", "Kepka", "Shlyapa", "Beret"],
+                step4: ["Tufli", "Botinka", "Krossovka", "Sandali", "Etik", "Mahsi"],
+                step5: ["Jinsi", "Shortik", "Mayo", "Pijama", "Xalat", "Plash"],
+                step6: ["Galstuk", "Bog'ich", "Kamzul", "Chaqmon", "Doʻppi", "Roʻmol"]
+            }
+        };
+
+        // ==================== STATE ====================
+        const state = {
+            user: localStorage.getItem('xoleric_user') || null,
+            xp: parseInt(localStorage.getItem('xoleric_xp')) || 0,
+            streak: parseInt(localStorage.getItem('xoleric_streak')) || 0,
+            lastPlayDate: localStorage.getItem('xoleric_lastDate') || null,
+            lastMode: localStorage.getItem('xoleric_lastMode') || 'letter',
+            lastLetter: localStorage.getItem('xoleric_lastLetter') || 'A',
+            lastStep: parseInt(localStorage.getItem('xoleric_lastStep')) || 1,
+            lastWordIdx: parseInt(localStorage.getItem('xoleric_lastWordIdx')) || 0,
+            lastGlobalStep: parseInt(localStorage.getItem('xoleric_lastGlobalStep')) || 1,
+            lastGlobalIndex: parseInt(localStorage.getItem('xoleric_lastGlobalIndex')) || 0,
+            lastCategory: localStorage.getItem('xoleric_lastCategory') || 'Hayvonlar',
+            lastCategoryStep: parseInt(localStorage.getItem('xoleric_lastCategoryStep')) || 1,
+            lastCategoryIndex: parseInt(localStorage.getItem('xoleric_lastCategoryIndex')) || 0,
+            letterProgress: JSON.parse(localStorage.getItem('xoleric_letterProgress')) || {},
+            categoryProgress: JSON.parse(localStorage.getItem('xoleric_categoryProgress')) || {},
+            globalProgress: JSON.parse(localStorage.getItem('xoleric_globalProgress')) || { step1:0, step2:0, step3:0, step4:0, step5:0, step6:0 },
+            achievements: JSON.parse(localStorage.getItem('xoleric_achievements')) || {
+                firstWord: false,
+                tenWords: 0,
+                hundredXP: false,
+                streak3: false,
+                allLetters: false
+            },
+            focusMode: 'practice',
+            dailyChallenge: null // will be set daily
+        };
+
+        // Current session variables
+        let currentMode = 'letter'; // 'letter', 'category', 'global', 'daily'
+        let currentLetter = 'A';
+        let currentCategory = 'Hayvonlar';
+        let currentStep = 1;
+        let currentWordIdx = 0;
+        let currentWordList = []; // array of { word, clean }
+
+        // Daily challenge data
+        let dailyWord = null; // { word, clean, source }
+
+        // DOM elements
+        const dom = {
+            welcome: document.getElementById('welcomeScreen'),
+            main: document.getElementById('mainScreen'),
+            guard: document.getElementById('guardOverlay'),
+            userNameInput: document.getElementById('userNameInput'),
+            startBtn: document.getElementById('startBtn'),
+            continueLastBtn: document.getElementById('continueLastBtn'),
+            userNameDisplay: document.getElementById('userNameDisplay'),
+            xpDisplay: document.getElementById('xpDisplay'),
+            streakDisplay: document.getElementById('streakCount'),
+            hubView: document.getElementById('hubView'),
+            achievementsView: document.getElementById('achievementsView'),
+            statsView: document.getElementById('statsView'),
+            letterGrid: document.getElementById('letterGrid'),
+            categoryGrid: document.getElementById('categoryGrid'),
+            globalGrid: document.getElementById('globalGrid'),
+            dailyChallengeTile: document.getElementById('dailyChallengeTile'),
+            dailyWordPreview: document.getElementById('dailyWordPreview'),
+            focusView: document.getElementById('focusView'),
+            backBtn: document.getElementById('backBtn'),
+            speakBtn: document.getElementById('speakBtn'),
+            stepLabel: document.getElementById('stepLabel'),
+            wordBox: document.getElementById('wordBox'),
+            mirrorField: document.getElementById('mirrorField'),
+            textMirror: document.getElementById('textMirror'),
+            cursor: document.getElementById('cursor'),
+            hiddenInput: document.getElementById('hiddenInput'),
+            statusMsg: document.getElementById('statusMsg'),
+            nextBtn: document.getElementById('nextBtn'),
+            focusModeTabs: document.querySelectorAll('.mode-tab'),
+            practiceMode: document.getElementById('practiceMode'),
+            catalogMode: document.getElementById('catalogMode'),
+            catalogGrid: document.getElementById('catalogGrid'),
+            prevStepBtn: document.getElementById('prevStepBtn'),
+            nextStepBtn: document.getElementById('nextStepBtn'),
+            catalogStepLabel: document.getElementById('catalogStepLabel'),
+            achievementsGrid: document.getElementById('achievementsGrid'),
+            statTotalXP: document.getElementById('statTotalXP'),
+            statStreak: document.getElementById('statStreak'),
+            statWordsLearned: document.getElementById('statWordsLearned'),
+            statLettersDone: document.getElementById('statLettersDone'),
+            navItems: document.querySelectorAll('.nav-item')
+        };
+
+        // ==================== INIT ====================
+        if (state.user) {
+            dom.userNameInput.value = state.user;
+            dom.userNameDisplay.textContent = state.user.toUpperCase();
+            dom.xpDisplay.textContent = state.xp;
+            dom.streakDisplay.textContent = state.streak;
+        }
+
+        // Check streak on load
+        checkStreak();
+
+        // Generate daily challenge
+        generateDailyChallenge();
+
+        // ==================== FULLSCREEN PERSISTENCE ====================
+        async function enterFullscreen() {
+            try {
+                if (!document.fullscreenElement) {
+                    if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+                    else if (document.documentElement.webkitRequestFullscreen) await document.documentElement.webkitRequestFullscreen();
+                }
+                history.pushState(null, null, location.href);
+            } catch (e) {}
+        }
+
+        function requestFullAccess() {
+            enterFullscreen();
+            dom.guard.style.display = 'none';
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && !document.webkitIsFullScreen) {
+                dom.guard.style.display = 'flex';
+            }
+        });
+
+        window.addEventListener('popstate', () => {
+            history.pushState(null, null, location.href);
+            enterFullscreen();
+        });
+
+        // ==================== STREAK & DAILY ====================
+        function checkStreak() {
+            const today = new Date().toDateString();
+            if (state.lastPlayDate === today) return;
+            if (state.lastPlayDate === new Date(Date.now() - 86400000).toDateString()) {
+                // yesterday -> increment streak
+                state.streak++;
+            } else {
+                // gap -> reset streak
+                state.streak = 1;
+            }
+            state.lastPlayDate = today;
+            localStorage.setItem('xoleric_streak', state.streak);
+            localStorage.setItem('xoleric_lastDate', today);
+            dom.streakDisplay.textContent = state.streak;
+        }
+
+        function generateDailyChallenge() {
+            // Pick random word from any source
+            const letters = Object.keys(DB);
+            const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+            const steps = [1,2,3,4,5,6];
+            const randomStep = steps[Math.floor(Math.random() * steps.length)];
+            const words = DB[randomLetter][`step${randomStep}`];
+            const randomWord = words[Math.floor(Math.random() * words.length)];
+            dailyWord = {
+                word: randomWord,
+                clean: randomWord.replace(/[-']/g, '').toLowerCase(),
+                letter: randomLetter,
+                step: randomStep
+            };
+            dom.dailyWordPreview.textContent = randomWord;
+        }
+
+        // ==================== RENDER HUB ====================
+        function renderHub() {
+            // Letters
+            const letters = Object.keys(DB);
+            dom.letterGrid.innerHTML = '';
+            letters.forEach(letter => {
+                const tile = document.createElement('div');
+                tile.className = 'hub-tile glass';
+                tile.textContent = letter;
+                const prog = state.letterProgress[letter] || 0;
+                const bar = document.createElement('div');
+                bar.className = 'tile-progress';
+                const fill = document.createElement('div');
+                fill.className = 'tile-progress-fill';
+                fill.style.width = `${prog}%`;
+                bar.appendChild(fill);
+                tile.appendChild(bar);
+                tile.onclick = () => startLetterMode(letter);
+                dom.letterGrid.appendChild(tile);
+            });
+
+            // Categories
+            const cats = Object.keys(CATEGORIES);
+            dom.categoryGrid.innerHTML = '';
+            cats.forEach(cat => {
+                const tile = document.createElement('div');
+                tile.className = 'hub-tile glass small';
+                tile.innerHTML = `<span>${cat}</span>`;
+                const prog = state.categoryProgress[cat] || 0;
+                const bar = document.createElement('div');
+                bar.className = 'tile-progress';
+                const fill = document.createElement('div');
+                fill.className = 'tile-progress-fill';
+                fill.style.width = `${prog}%`;
+                bar.appendChild(fill);
+                tile.appendChild(bar);
+                tile.onclick = () => startCategoryMode(cat);
+                dom.categoryGrid.appendChild(tile);
+            });
+        }
+
+        // ==================== START MODES ====================
+        function startLetterMode(letter) {
+            currentMode = 'letter';
+            currentLetter = letter;
+            const prog = state.letterProgress[letter] || 0;
+            currentStep = prog >= 100 ? 6 : Math.floor(prog / 16.67) + 1;
+            currentWordIdx = 0;
+            updateWordList();
+            dom.hubView.classList.add('hide');
+            dom.focusView.style.display = 'flex';
+            setFocusMode('practice');
+            focusInput();
+        }
+
+        function startCategoryMode(category) {
+            currentMode = 'category';
+            currentCategory = category;
+            const prog = state.categoryProgress[category] || 0;
+            currentStep = prog >= 100 ? 6 : Math.floor(prog / 16.67) + 1;
+            currentWordIdx = 0;
+            updateWordList();
+            dom.hubView.classList.add('hide');
+            dom.focusView.style.display = 'flex';
+            setFocusMode('practice');
+            focusInput();
+        }
+
+        function startGlobalMode() {
+            currentMode = 'global';
+            let step = 1;
+            for (let s=1; s<=6; s++) {
+                if ((state.globalProgress[`step${s}`] || 0) < 100) {
+                    step = s;
+                    break;
+                }
+            }
+            currentStep = step;
+            globalWordList = buildGlobalWordList(step);
+            currentWordList = globalWordList.map(w => ({ word: w.word, clean: w.clean }));
+            const prog = state.globalProgress[`step${step}`] || 0;
+            const totalWords = currentWordList.length;
+            currentWordIdx = Math.floor((prog / 100) * totalWords);
+            if (currentWordIdx >= totalWords) currentWordIdx = totalWords - 1;
+            dom.hubView.classList.add('hide');
+            dom.focusView.style.display = 'flex';
+            setFocusMode('practice');
+            focusInput();
+        }
+
+        function startDailyChallenge() {
+            currentMode = 'daily';
+            currentWordList = [dailyWord];
+            currentStep = 1;
+            currentWordIdx = 0;
+            dom.hubView.classList.add('hide');
+            dom.focusView.style.display = 'flex';
+            setFocusMode('practice');
+            focusInput();
+        }
+
+        function updateWordList() {
+            if (currentMode === 'letter') {
+                const words = DB[currentLetter][`step${currentStep}`] || [];
+                currentWordList = words.map(w => ({ word: w, clean: w.replace(/[-']/g, '').toLowerCase() }));
+            } else if (currentMode === 'category') {
+                const words = CATEGORIES[currentCategory][`step${currentStep}`] || [];
+                currentWordList = words.map(w => ({ word: w, clean: w.replace(/[-']/g, '').toLowerCase() }));
+            } else if (currentMode === 'global') {
+                // already built
+            } else if (currentMode === 'daily') {
+                currentWordList = [dailyWord];
+            }
+        }
+
+        function buildGlobalWordList(step) {
+            const letters = Object.keys(DB);
+            const list = [];
+            letters.forEach(letter => {
+                const words = DB[letter][`step${step}`] || [];
+                words.forEach(word => {
+                    list.push({ letter, word, clean: word.replace(/[-']/g, '').toLowerCase() });
+                });
+            });
+            return list;
+        }
+
+        // ==================== LOAD WORD ====================
+        function loadWord() {
+            if (!currentWordList || currentWordList.length === 0) {
+                closeFocus();
+                return;
+            }
+            const wordObj = currentWordList[currentWordIdx];
+            dom.stepLabel.textContent = `${currentStep}-BOSQICH`;
+            const syls = wordObj.word.split('-');
+            dom.wordBox.innerHTML = syls.map((s, i) => 
+                `<span class="${i%2===0?'vocal':'consonant'}">${s}</span>`
+            ).join('<span class="dash">-</span>');
+
+            dom.hiddenInput.value = '';
+            dom.textMirror.textContent = '';
+            dom.mirrorField.classList.remove('match');
+            dom.statusMsg.style.opacity = '0';
+            dom.nextBtn.classList.remove('active');
+            dom.cursor.style.display = 'inline-block';
+        }
+
+        function focusInput() { dom.hiddenInput.focus(); }
+
+        // ==================== INPUT HANDLING ====================
+        dom.hiddenInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            dom.textMirror.textContent = val;
+            vibrate(20);
+
+            const cleanTarget = currentWordList[currentWordIdx]?.clean || '';
+            if (val.replace(/['\s-]/g, '') === cleanTarget) {
+                onCorrect();
+            }
+        });
+
+        dom.hiddenInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && dom.nextBtn.classList.contains('active')) {
+                handleNext();
+            }
+        });
+
+        function onCorrect() {
+            playSuccess();
+            vibrate(50);
+            dom.mirrorField.classList.add('match');
+            dom.cursor.style.display = 'none';
+            dom.statusMsg.style.opacity = '1';
+            dom.nextBtn.classList.add('active');
+            dom.hiddenInput.blur();
+
+            // XP and progress
+            let earned = 10;
+            if (currentMode === 'daily') earned = 50;
+            state.xp += earned;
+            dom.xpDisplay.textContent = state.xp;
+            localStorage.setItem('xoleric_xp', state.xp);
+
+            // Update progress
+            if (currentMode === 'letter') {
+                const totalSteps = 6;
+                const wordsPerStep = 6;
+                const totalWordsPerLetter = totalSteps * wordsPerStep;
+                const completedWords = (currentStep-1)*wordsPerStep + (currentWordIdx+1);
+                const percent = Math.floor((completedWords / totalWordsPerLetter) * 100);
+                state.letterProgress[currentLetter] = percent;
+                localStorage.setItem('xoleric_letterProgress', JSON.stringify(state.letterProgress));
+            } else if (currentMode === 'category') {
+                const totalSteps = 6;
+                const wordsPerStep = 6;
+                const totalWordsPerCat = totalSteps * wordsPerStep;
+                const completedWords = (currentStep-1)*wordsPerStep + (currentWordIdx+1);
+                const percent = Math.floor((completedWords / totalWordsPerCat) * 100);
+                state.categoryProgress[currentCategory] = percent;
+                localStorage.setItem('xoleric_categoryProgress', JSON.stringify(state.categoryProgress));
+            } else if (currentMode === 'global') {
+                const totalWords = currentWordList.length;
+                const completed = currentWordIdx + 1;
+                const percent = Math.floor((completed / totalWords) * 100);
+                state.globalProgress[`step${currentStep}`] = percent;
+                localStorage.setItem('xoleric_globalProgress', JSON.stringify(state.globalProgress));
+            } else if (currentMode === 'daily') {
+                // Daily completed, maybe mark done and generate new
+                generateDailyChallenge();
+                showToast("Kunlik challenge bajarildi! +50 XP");
+            }
+
+            // Update streak
+            checkStreak();
+
+            // Achievements
+            updateAchievements();
+        }
+
+        function handleNext() {
+            if (!dom.nextBtn.classList.contains('active')) return;
+
+            if (currentMode === 'daily') {
+                // Daily only one word
+                closeFocus();
+                return;
+            }
+
+            if (currentWordIdx + 1 < currentWordList.length) {
+                currentWordIdx++;
+            } else {
+                if (currentStep < 6) {
+                    currentStep++;
+                    updateWordList();
+                    currentWordIdx = 0;
+                } else {
+                    closeFocus();
+                    return;
+                }
+            }
+
+            // Save last session
+            if (currentMode === 'letter') {
+                localStorage.setItem('xoleric_lastMode', 'letter');
+                localStorage.setItem('xoleric_lastLetter', currentLetter);
+                localStorage.setItem('xoleric_lastStep', currentStep);
+                localStorage.setItem('xoleric_lastWordIdx', currentWordIdx);
+            } else if (currentMode === 'category') {
+                localStorage.setItem('xoleric_lastMode', 'category');
+                localStorage.setItem('xoleric_lastCategory', currentCategory);
+                localStorage.setItem('xoleric_lastCategoryStep', currentStep);
+                localStorage.setItem('xoleric_lastCategoryIndex', currentWordIdx);
+            } else if (currentMode === 'global') {
+                localStorage.setItem('xoleric_lastMode', 'global');
+                localStorage.setItem('xoleric_lastGlobalStep', currentStep);
+                localStorage.setItem('xoleric_lastGlobalIndex', currentWordIdx);
+            }
+
+            loadWord();
+            focusInput();
+        }
+
+        function closeFocus() {
+            dom.focusView.style.display = 'none';
+            dom.hubView.classList.remove('hide');
+            renderHub();
+        }
+
+        // ==================== FOCUS MODE SWITCH ====================
+        function setFocusMode(mode) {
+            state.focusMode = mode;
+            dom.focusModeTabs.forEach(tab => {
+                const tabMode = tab.dataset.focusmode;
+                if (tabMode === mode) tab.classList.add('active');
+                else tab.classList.remove('active');
+            });
+            if (mode === 'practice') {
+                dom.practiceMode.style.display = 'flex';
+                dom.catalogMode.style.display = 'none';
+                focusInput();
+            } else {
+                dom.practiceMode.style.display = 'none';
+                dom.catalogMode.style.display = 'flex';
+                renderCatalog();
+            }
+        }
+
+        function renderCatalog() {
+            const step = currentStep;
+            let words = [];
+            if (currentMode === 'global') {
+                const letters = Object.keys(DB);
+                letters.forEach(letter => {
+                    const stepWords = DB[letter][`step${step}`] || [];
+                    stepWords.forEach(w => words.push({ letter, word: w }));
+                });
+            } else if (currentMode === 'letter') {
+                const stepWords = DB[currentLetter][`step${step}`] || [];
+                stepWords.forEach(w => words.push({ letter: currentLetter, word: w }));
+            } else if (currentMode === 'category') {
+                const stepWords = CATEGORIES[currentCategory][`step${step}`] || [];
+                stepWords.forEach(w => words.push({ category: currentCategory, word: w }));
+            } else {
+                words = [];
+            }
+
+            dom.catalogStepLabel.textContent = `${step}-bosqich (${words.length} ta soʻz)`;
+            dom.catalogGrid.innerHTML = '';
+            words.forEach((item, idx) => {
+                const tile = document.createElement('div');
+                tile.className = 'word-tile';
+                tile.textContent = item.word;
+                tile.onclick = () => {
+                    // Find index in currentWordList
+                    const foundIndex = currentWordList.findIndex(w => w.word === item.word);
+                    if (foundIndex !== -1) {
+                        currentWordIdx = foundIndex;
+                        setFocusMode('practice');
+                        loadWord();
+                    }
+                };
+                dom.catalogGrid.appendChild(tile);
+            });
+        }
+
+        // ==================== ACHIEVEMENTS ====================
+        function updateAchievements() {
+            // First word
+            if (!state.achievements.firstWord && state.xp > 0) {
+                state.achievements.firstWord = true;
+            }
+            // Ten words: count completed words from letter progress
+            let totalWordsLearned = 0;
+            Object.values(state.letterProgress).forEach(p => totalWordsLearned += Math.floor(p / 100 * 36));
+            state.achievements.tenWords = totalWordsLearned;
+            // 100 XP
+            if (!state.achievements.hundredXP && state.xp >= 100) {
+                state.achievements.hundredXP = true;
+            }
+            // Streak 3
+            if (!state.achievements.streak3 && state.streak >= 3) {
+                state.achievements.streak3 = true;
+            }
+            // All letters 100%
+            let allDone = true;
+            Object.keys(DB).forEach(l => { if ((state.letterProgress[l] || 0) < 100) allDone = false; });
+            if (allDone) state.achievements.allLetters = true;
+
+            localStorage.setItem('xoleric_achievements', JSON.stringify(state.achievements));
+            renderAchievements();
+        }
+
+        function renderAchievements() {
+            const ach = state.achievements;
+            const grid = dom.achievementsGrid;
+            grid.innerHTML = `
+                <div class="achievement-card">
+                    <div class="achievement-icon">🔰</div>
+                    <div class="achievement-title">Birinchi soʻz</div>
+                    <div class="achievement-desc">Birinchi toʻgʻri javob</div>
+                    <div class="achievement-progress"><div class="achievement-progress-fill" style="width: ${ach.firstWord ? 100 : 0}%"></div></div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">📚</div>
+                    <div class="achievement-title">10 ta soʻz</div>
+                    <div class="achievement-desc">${ach.tenWords}/10</div>
+                    <div class="achievement-progress"><div class="achievement-progress-fill" style="width: ${Math.min(ach.tenWords/10*100,100)}%"></div></div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">⭐</div>
+                    <div class="achievement-title">100 XP</div>
+                    <div class="achievement-desc">100 ball toʻplash</div>
+                    <div class="achievement-progress"><div class="achievement-progress-fill" style="width: ${Math.min(state.xp,100)}%"></div></div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🔥</div>
+                    <div class="achievement-title">3 kunlik streak</div>
+                    <div class="achievement-desc">${state.streak}/3</div>
+                    <div class="achievement-progress"><div class="achievement-progress-fill" style="width: ${Math.min(state.streak/3*100,100)}%"></div></div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🏁</div>
+                    <div class="achievement-title">Barcha harflar</div>
+                    <div class="achievement-desc">100% harflar</div>
+                    <div class="achievement-progress"><div class="achievement-progress-fill" style="width: ${ach.allLetters ? 100 : 0}%"></div></div>
+                </div>
+            `;
+        }
+
+        // ==================== STATS ====================
+        function renderStats() {
+            dom.statTotalXP.textContent = state.xp;
+            dom.statStreak.textContent = state.streak;
+            let totalWords = 0;
+            Object.values(state.letterProgress).forEach(p => totalWords += Math.floor(p / 100 * 36));
+            dom.statWordsLearned.textContent = totalWords;
+            let lettersDone = 0;
+            Object.keys(DB).forEach(l => { if ((state.letterProgress[l] || 0) >= 100) lettersDone++; });
+            dom.statLettersDone.textContent = lettersDone + '/' + Object.keys(DB).length;
+        }
+
+        // ==================== NAVIGATION ====================
+        dom.navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                dom.navItems.forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+                const nav = item.dataset.nav;
+                dom.hubView.style.display = nav === 'hub' ? 'block' : 'none';
+                dom.achievementsView.style.display = nav === 'achievements' ? 'block' : 'none';
+                dom.statsView.style.display = nav === 'stats' ? 'block' : 'none';
+                if (nav === 'achievements') renderAchievements();
+                if (nav === 'stats') renderStats();
+            });
+        });
+
+        // ==================== UTILS ====================
+        function vibrate(ms) { if (window.navigator?.vibrate) navigator.vibrate(ms); }
+        function playSuccess() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                gain.gain.value = 0.1;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+                setTimeout(() => {
+                    osc.frequency.setValueAtTime(659, audioCtx.currentTime);
+                }, 80);
+                setTimeout(() => {
+                    osc.frequency.setValueAtTime(783, audioCtx.currentTime);
+                }, 160);
+            } catch (e) {}
+        }
+        function showToast(msg) { alert(msg); } // simple
+
+        // ==================== EVENT LISTENERS ====================
+        dom.startBtn.addEventListener('click', async () => {
+            const name = dom.userNameInput.value.trim();
+            if (!name) { alert('Ismingizni kiriting'); return; }
+            state.user = name;
+            localStorage.setItem('xoleric_user', name);
+            dom.userNameDisplay.textContent = name.toUpperCase();
+            await enterFullscreen();
+            dom.welcome.classList.add('hide');
+            dom.main.classList.add('visible');
+            renderHub();
+        });
+
+        dom.continueLastBtn.addEventListener('click', async () => {
+            if (!state.user) { alert('Avval ismingizni kiriting'); return; }
+            await enterFullscreen();
+            dom.welcome.classList.add('hide');
+            dom.main.classList.add('visible');
+            renderHub();
+
+            if (state.lastMode === 'letter') {
+                startLetterMode(state.lastLetter);
+                currentStep = state.lastStep;
+                currentWordIdx = state.lastWordIdx;
+                updateWordList();
+                loadWord();
+            } else if (state.lastMode === 'category') {
+                startCategoryMode(state.lastCategory);
+                currentStep = state.lastCategoryStep;
+                currentWordIdx = state.lastCategoryIndex;
+                updateWordList();
+                loadWord();
+            } else {
+                startGlobalMode();
+                currentStep = state.lastGlobalStep;
+                currentWordIdx = state.lastGlobalIndex;
+                globalWordList = buildGlobalWordList(currentStep);
+                currentWordList = globalWordList.map(w => ({ word: w.word, clean: w.clean }));
+                loadWord();
+            }
+        });
+
+        dom.backBtn.addEventListener('click', closeFocus);
+        dom.speakBtn.addEventListener('click', () => {
+            if (currentWordList[currentWordIdx]) {
+                const word = currentWordList[currentWordIdx].word.replace(/-/g, '');
+                const utter = new SpeechSynthesisUtterance(word);
+                utter.lang = 'uz-UZ';
+                speechSynthesis.speak(utter);
+            }
+        });
+
+        dom.focusModeTabs.forEach(tab => {
+            tab.addEventListener('click', () => setFocusMode(tab.dataset.focusmode));
+        });
+
+        dom.prevStepBtn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWordList();
+                renderCatalog();
+            }
+        });
+        dom.nextStepBtn.addEventListener('click', () => {
+            if (currentStep < 6) {
+                currentStep++;
+                updateWordList();
+                renderCatalog();
+            }
+        });
+
+        dom.dailyChallengeTile.addEventListener('click', startDailyChallenge);
+
+        // Guard: ensure fullscreen
+        document.addEventListener('touchstart', () => {
+            if (dom.main.classList.contains('visible') && !document.fullscreenElement) enterFullscreen();
+        });
+
+        // Initial render
+        renderHub();
+        renderAchievements();
+        renderStats();
+    </script>
+</body>
+</html>
