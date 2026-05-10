@@ -6,6 +6,9 @@ on:
     tags: [ 'v*' ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -55,6 +58,7 @@ jobs:
           gh release create "${{ github.ref_name }}" \
             --title "XOLERIC ${{ github.ref_name }}" \
             --notes "XOLERIC super-app — productivity, learning, and focus tools" \
-            apk/XOLERIC-v2.0.0.apk
+            --latest \
+            apk/XOLERIC-v2.0.0.apk || echo "Release may already exist"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
