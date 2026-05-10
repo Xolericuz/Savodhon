@@ -57,8 +57,19 @@ jobs:
         run: |
           gh release create "${{ github.ref_name }}" \
             --title "XOLERIC ${{ github.ref_name }}" \
-            --notes "XOLERIC super-app — productivity, learning, and focus tools" \
+            --notes-file /dev/stdin \
             --latest \
-            apk/XOLERIC-v2.0.0.apk || echo "Release may already exist"
+            apk/XOLERIC-v2.0.0.apk <<'NOTES'
+          XOLERIC super-app — productivity, learning, and focus tools
+          
+          ## What's New
+          - Full offline WebView app
+          - 4 themes: Dark, Light, Neon, Ocean
+          - 15-level ranking system
+          - Daily challenges
+          - Focus timer (Pomodoro)
+          - SRS review system
+          - Data export/import
+          NOTES
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
