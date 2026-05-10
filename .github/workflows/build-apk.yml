@@ -51,14 +51,10 @@ jobs:
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: "XOLERIC ${{ github.ref_name }}"
-          body: "XOLERIC super-app — productivity, learning, and focus tools"
-          files: apk/XOLERIC-v2.0.0.apk
-          make_latest: true
-          draft: false
-          prerelease: false
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "XOLERIC ${{ github.ref_name }}" \
+            --notes "XOLERIC super-app — productivity, learning, and focus tools" \
+            apk/XOLERIC-v2.0.0.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
