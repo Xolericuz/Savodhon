@@ -2,3 +2,4 @@ android/sdk/
 android/.gradle/
 android/local.properties
 *.idsig
+*.keystore
