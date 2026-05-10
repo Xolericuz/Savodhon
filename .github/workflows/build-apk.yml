@@ -22,6 +22,11 @@ jobs:
         with:
           api-level: 34
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.9
+
       - name: Sync web assets
         run: |
           mkdir -p android/app/src/main/assets
@@ -30,8 +35,7 @@ jobs:
       - name: Build APK
         run: |
           cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon
 
       - name: Copy APK
         run: |
